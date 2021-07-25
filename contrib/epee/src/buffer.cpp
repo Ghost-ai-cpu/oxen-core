@@ -32,8 +32,8 @@
 #include <cstdint>
 #include <vector>
 
-#undef LOKI_DEFAULT_LOG_CATEGORY
-#define LOKI_DEFAULT_LOG_CATEGORY "net.buffer"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "net.buffer"
 
 namespace epee
 {

@@ -64,7 +64,7 @@ endif()
 target_link_libraries(epee
   PUBLIC
     easylogging
-    oxenmq::oxenmq
+    worktipsmq::worktipsmq
   PRIVATE
     filesystem
     Boost::thread
