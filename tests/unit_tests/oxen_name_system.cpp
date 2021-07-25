@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "common/oxen.h"
-#include "cryptonote_core/oxen_name_system.h"
-#include "oxen_economy.h"
+#include "common/worktips.h"
+#include "cryptonote_core/worktips_name_system.h"
+#include "worktips_economy.h"
 
-TEST(oxen_name_system, name_tests)
+TEST(worktips_name_system, name_tests)
 {
   struct name_test
   {
@@ -12,32 +12,32 @@ TEST(oxen_name_system, name_tests)
     bool allowed;
   };
 
-  name_test const lokinet_names[] = {
-      {"a.loki", true},
-      {"domain.loki", true},
-      {"xn--tda.loki", true}, // ü
-      {"xn--Mnchen-Ost-9db.loki", true}, // München-Ost
-      {"xn--fwg93vdaef749it128eiajklmnopqrstu7dwaxyz0a1a2a3a643qhok169a.loki", true}, // ⸘🌻‽💩🤣♠♡♢♣🂡🂢🂣🂤🂥🂦🂧🂨🂩🂪🂫🂬🂭🂮🂱🂲🂳🂴🂵🂶🂷🂸🂹
-      {"abcdefghijklmnopqrstuvwxyz123456.loki", true}, // Max length = 32 if no hyphen (so that it can't look like a raw address)
-      {"a-cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789a.loki", true}, // Max length = 63 if there is at least one hyphen
+  name_test const worktipsnet_names[] = {
+      {"a.worktips", true},
+      {"domain.worktips", true},
+      {"xn--tda.worktips", true}, // ü
+      {"xn--Mnchen-Ost-9db.worktips", true}, // München-Ost
+      {"xn--fwg93vdaef749it128eiajklmnopqrstu7dwaxyz0a1a2a3a643qhok169a.worktips", true}, // ⸘🌻‽💩🤣♠♡♢♣🂡🂢🂣🂤🂥🂦🂧🂨🂩🂪🂫🂬🂭🂮🂱🂲🂳🂴🂵🂶🂷🂸🂹
+      {"abcdefghijklmnopqrstuvwxyz123456.worktips", true}, // Max length = 32 if no hyphen (so that it can't look like a raw address)
+      {"a-cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789a.worktips", true}, // Max length = 63 if there is at least one hyphen
 
-      {"abc.domain.loki", false},
+      {"abc.domain.worktips", false},
       {"a", false},
       {"a.loko", false},
-      {"a domain name.loki", false},
-      {"-.loki", false},
-      {"a_b.loki", false},
-      {" a.loki", false},
-      {"a.loki ", false},
-      {" a.loki ", false},
-      {"localhost.loki", false},
+      {"a domain name.worktips", false},
+      {"-.worktips", false},
+      {"a_b.worktips", false},
+      {" a.worktips", false},
+      {"a.worktips ", false},
+      {" a.worktips ", false},
+      {"localhost.worktips", false},
       {"localhost", false},
-      {"loki.loki", false},
-      {"snode.loki", false},
-      {"abcdefghijklmnopqrstuvwxyz1234567.loki", false}, // Too long (no hyphen)
-      {"a-cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789ab.loki", false}, // Too long with hyphen
-      {"xn--fwg93vdaef749it128eiajklmnopqrstu7dwaxyz0a1a2a3a643qhok169ab.loki", false}, // invalid (punycode and DNS name parts max at 63)
-      {"ab--xyz.loki", false}, // Double-hyphen at chars 3&4 is reserved by DNS (currently only xn-- is used).
+      {"worktips.worktips", false},
+      {"snode.worktips", false},
+      {"abcdefghijklmnopqrstuvwxyz1234567.worktips", false}, // Too long (no hyphen)
+      {"a-cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789ab.worktips", false}, // Too long with hyphen
+      {"xn--fwg93vdaef749it128eiajklmnopqrstu7dwaxyz0a1a2a3a643qhok169ab.worktips", false}, // invalid (punycode and DNS name parts max at 63)
+      {"ab--xyz.worktips", false}, // Double-hyphen at chars 3&4 is reserved by DNS (currently only xn-- is used).
   };
 
   name_test const session_wallet_names[] = {
@@ -72,8 +72,8 @@ TEST(oxen_name_system, name_tests)
   {
     auto type = static_cast<ons::mapping_type>(type16);
     if (type == ons::mapping_type::wallet) continue; // Not yet supported
-    name_test const *names = ons::is_lokinet_type(type) ? lokinet_names : session_wallet_names;
-    size_t names_count     = ons::is_lokinet_type(type) ? oxen::char_count(lokinet_names) : oxen::char_count(session_wallet_names);
+    name_test const *names = ons::is_worktipsnet_type(type) ? worktipsnet_names : session_wallet_names;
+    size_t names_count     = ons::is_worktipsnet_type(type) ? worktips::char_count(worktipsnet_names) : worktips::char_count(session_wallet_names);
 
     for (size_t i = 0; i < names_count; i++)
     {
@@ -83,7 +83,7 @@ TEST(oxen_name_system, name_tests)
   }
 }
 
-TEST(oxen_name_system, value_encrypt_and_decrypt)
+TEST(worktips_name_system, value_encrypt_and_decrypt)
 {
   std::string name         = "my ons name";
   ons::mapping_value value = {};
@@ -91,9 +91,9 @@ TEST(oxen_name_system, value_encrypt_and_decrypt)
   value.len                = 32;
   memset(&value.buffer[0], 'a', value.len);
 
-  // The type here is not hugely important for decryption except that lokinet (as opposed to
+  // The type here is not hugely important for decryption except that worktipsnet (as opposed to
   // session) doesn't fall back to argon2 decryption if decryption fails.
-  constexpr auto type = ons::mapping_type::lokinet;
+  constexpr auto type = ons::mapping_type::worktipsnet;
 
   // Encryption and Decryption success
   {
@@ -127,7 +127,7 @@ TEST(oxen_name_system, value_encrypt_and_decrypt)
   }
 }
 
-TEST(oxen_name_system, value_encrypt_and_decrypt_heavy)
+TEST(worktips_name_system, value_encrypt_and_decrypt_heavy)
 {
   std::string name         = "abcdefg";
   ons::mapping_value value = {};

@@ -108,7 +108,7 @@ static void make_rct_tx(eventV& events,
 {
     txs.emplace_back();
 
-    bool success = oxen_tx_builder(events, txs.back(), blk_head, from, to.get_keys().m_account_address, amount, cryptonote::network_version_7).build();
+    bool success = worktips_tx_builder(events, txs.back(), blk_head, from, to.get_keys().m_account_address, amount, cryptonote::network_version_7).build();
     /// TODO: beter error message
     if (!success) throw std::exception();
     events.push_back(txs.back());

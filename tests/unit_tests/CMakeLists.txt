@@ -51,7 +51,7 @@ add_executable(unit_tests
   keccak.cpp
   levin.cpp
   logging.cpp
-  oxen_name_system.cpp
+  worktips_name_system.cpp
   long_term_block_weight.cpp
   lmdb.cpp
   main.cpp

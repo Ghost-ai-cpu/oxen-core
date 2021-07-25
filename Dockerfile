@@ -1,7 +1,7 @@
 # Multistage docker build, requires docker 17.05
 
 # TO RUN
-# docker build -t oxen-daemon-image .
+# docker build -t worktips-daemon-image .
 
 # TO COLLECT BINARIES
 # ./util/build_scripts/collect_from_docker_container.sh
@@ -105,7 +105,7 @@ RUN set -ex && \
     make -j$(nproc) VERBOSE=1
 
 RUN set -ex && \
-    ldd /src/build/release/bin/oxend
+    ldd /src/build/release/bin/worktipsd
 
 # runtime stage
 FROM ubuntu:16.04
@@ -117,24 +117,24 @@ RUN set -ex && \
     rm -rf /var/lib/apt
 COPY --from=builder /src/build/release/bin /usr/local/bin/
 
-# Create oxen user
-RUN adduser --system --group --disabled-password oxen && \
-	mkdir -p /wallet /home/oxen/.oxen && \
-	chown -R oxen:oxen /home/oxen/.oxen && \
-	chown -R oxen:oxen /wallet
+# Create worktips user
+RUN adduser --system --group --disabled-password worktips && \
+	mkdir -p /wallet /home/worktips/.worktips && \
+	chown -R worktips:worktips /home/worktips/.worktips && \
+	chown -R worktips:worktips /wallet
 
 # Contains the blockchain
-VOLUME /home/oxen/.oxen
+VOLUME /home/worktips/.worktips
 
 # Generate your wallet via accessing the container and run:
 # cd /wallet
-# oxen-wallet-cli
+# worktips-wallet-cli
 VOLUME /wallet
 
 EXPOSE 22022
 EXPOSE 22023
 
-# switch to user oxen
-USER oxen
+# switch to user worktips
+USER worktips
 
-ENTRYPOINT ["oxend", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=22022", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=22023", "--non-interactive", "--confirm-external-bind"]
+ENTRYPOINT ["worktipsd", "--p2p-bind-ip=0.0.0.0", "--p2p-bind-port=22022", "--rpc-bind-ip=0.0.0.0", "--rpc-bind-port=22023", "--non-interactive", "--confirm-external-bind"]

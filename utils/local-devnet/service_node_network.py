@@ -55,7 +55,7 @@ class SNNetwork:
 
         vprint("Using '{}' for data files and logs".format(datadir))
 
-        nodeopts = dict(oxend=self.binpath+'/oxend', datadir=datadir)
+        nodeopts = dict(worktipsd=self.binpath+'/worktipsd', datadir=datadir)
 
         self.sns = [Daemon(service_node=True, **nodeopts) for _ in range(sns)]
         self.nodes = [Daemon(**nodeopts) for _ in range(nodes)]
@@ -67,7 +67,7 @@ class SNNetwork:
             self.wallets.append(Wallet(
                 node=self.nodes[len(self.wallets) % len(self.nodes)],
                 name=name,
-                rpc_wallet=self.binpath+'/oxen-wallet-rpc',
+                rpc_wallet=self.binpath+'/worktips-wallet-rpc',
                 datadir=datadir))
 
         self.alice, self.bob, self.mike = self.wallets
@@ -79,22 +79,22 @@ class SNNetwork:
                 if i != k:
                     self.all_nodes[i].add_peer(self.all_nodes[k])
 
-        vprint("Starting new oxend service nodes with RPC on {} ports".format(self.sns[0].listen_ip), end="")
+        vprint("Starting new worktipsd service nodes with RPC on {} ports".format(self.sns[0].listen_ip), end="")
         for sn in self.sns:
             vprint(" {}".format(sn.rpc_port), end="", flush=True, timestamp=False)
             sn.start()
         vprint(timestamp=False)
-        vprint("Starting new regular oxend nodes with RPC on {} ports".format(self.nodes[0].listen_ip), end="")
+        vprint("Starting new regular worktipsd nodes with RPC on {} ports".format(self.nodes[0].listen_ip), end="")
         for d in self.nodes:
             vprint(" {}".format(d.rpc_port), end="", flush=True, timestamp=False)
             d.start()
         vprint(timestamp=False)
 
-        vprint("Waiting for all oxend's to get ready")
+        vprint("Waiting for all worktipsd's to get ready")
         for d in self.all_nodes:
             d.wait_for_json_rpc("get_info")
 
-        vprint("Oxends are ready. Starting wallets")
+        vprint("Worktipsds are ready. Starting wallets")
 
         for w in self.wallets:
             vprint("Starting new RPC wallet {w.name} at {w.listen_ip}:{w.rpc_port}".format(w=w))
@@ -143,7 +143,7 @@ class SNNetwork:
 
         self.print_wallet_balances()
 
-        vprint("Sending fake lokinet/ss pings")
+        vprint("Sending fake worktipsnet/ss pings")
         for sn in self.sns:
             sn.ping()
 

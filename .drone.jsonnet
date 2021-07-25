@@ -24,7 +24,7 @@ local debian_pipeline(name, image,
         lto=false,
         werror=false, // FIXME
         build_tests=true,
-        test_oxend=true, # Simple oxend offline startup test
+        test_worktipsd=true, # Simple worktipsd offline startup test
         run_tests=false, # Runs full test suite
         cmake_extra='',
         extra_cmds=[],
@@ -49,11 +49,11 @@ local debian_pipeline(name, image,
                 apt_get_quiet + ' install -y eatmydata',
                 'eatmydata ' + apt_get_quiet + ' dist-upgrade -y',
                 'eatmydata ' + apt_get_quiet + ' install -y --no-install-recommends cmake git ca-certificates ninja-build ccache '
-                    + deps + (if test_oxend then ' gdb' else ''),
+                    + deps + (if test_worktipsd then ' gdb' else ''),
                 'mkdir build',
                 'cd build',
                 'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DCMAKE_BUILD_TYPE='+build_type+' ' +
-                    '-DLOCAL_MIRROR=https://builds.lokinet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
+                    '-DLOCAL_MIRROR=https://builds.worktipsnet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
                     (if werror then '-DWARNINGS_AS_ERRORS=ON ' else '') +
                     (if build_tests || run_tests then '-DBUILD_TESTS=ON ' else '') +
                     cmake_extra
@@ -64,12 +64,12 @@ local debian_pipeline(name, image,
                 else
                     ['ninja -j' + jobs + ' -v']
             ) + (
-                if test_oxend then [
-                    '(sleep 3; echo "status\ndiff\nexit") | TERM=xterm ../utils/build_scripts/drone-gdb.sh ./bin/oxend --offline --data-dir=startuptest'
+                if test_worktipsd then [
+                    '(sleep 3; echo "status\ndiff\nexit") | TERM=xterm ../utils/build_scripts/drone-gdb.sh ./bin/worktipsd --offline --data-dir=startuptest'
                 ] else []
             ) + (
                 if run_tests then [
-                    'mkdir -v -p $$HOME/.oxen',
+                    'mkdir -v -p $$HOME/.worktips',
                     'GTEST_COLOR=1 ctest --output-on-failure -j'+jobs
                 ] else []
             ) + extra_cmds,
@@ -105,14 +105,14 @@ local mac_builder(name,
                 'mkdir build',
                 'cd build',
                 'cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-fcolor-diagnostics -DCMAKE_BUILD_TYPE='+build_type+' ' +
-                    '-DLOCAL_MIRROR=https://builds.lokinet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
+                    '-DLOCAL_MIRROR=https://builds.worktipsnet.dev/deps -DUSE_LTO=' + (if lto then 'ON ' else 'OFF ') +
                     (if werror then '-DWARNINGS_AS_ERRORS=ON ' else '') +
                     (if build_tests || run_tests then '-DBUILD_TESTS=ON ' else '') +
                     cmake_extra,
                 'ninja -j' + jobs + ' -v'
             ] + (
                 if run_tests then [
-                    'mkdir -v -p $$HOME/.oxen',
+                    'mkdir -v -p $$HOME/.worktips',
                     'GTEST_COLOR=1 ctest --output-on-failure -j'+jobs
                 ] else []
             ) + extra_cmds,
@@ -138,7 +138,7 @@ local android_build_steps(android_abi, android_platform=21, jobs=6, cmake_extra=
         '-DCMAKE_TOOLCHAIN_FILE=/usr/lib/android-sdk/ndk-bundle/build/cmake/android.toolchain.cmake ' +
         '-DANDROID_PLATFORM=' + android_platform + ' -DANDROID_ABI=' + android_abi + ' ' +
         '-DMONERO_SLOW_HASH=ON ' +
-        '-DLOCAL_MIRROR=https://builds.lokinet.dev/deps ' +
+        '-DLOCAL_MIRROR=https://builds.worktipsnet.dev/deps ' +
         '-DBUILD_STATIC_DEPS=ON -DSTATIC=ON -G Ninja ' + cmake_extra,
     'ninja -j' + jobs + ' -v wallet_merged',
     'cd ..',
@@ -159,10 +159,10 @@ local gui_wallet_step(image, wine=false) = {
         'curl -sSL https://deb.nodesource.com/setup_14.x | bash -',
         'eatmydata ' + apt_get_quiet + ' update',
         'eatmydata ' + apt_get_quiet + ' install -y nodejs',
-        'git clone https://github.com/loki-project/loki-electron-gui-wallet.git',
-        'cp -v build/bin/oxend' + (if wine then '.exe' else '') + ' loki-electron-gui-wallet/bin',
-        'cp -v build/bin/oxen-wallet-rpc' + (if wine then '.exe' else '') + ' loki-electron-gui-wallet/bin',
-        'cd loki-electron-gui-wallet',
+        'git clone https://github.com/worktips-project/worktips-electron-gui-wallet.git',
+        'cp -v build/bin/worktipsd' + (if wine then '.exe' else '') + ' worktips-electron-gui-wallet/bin',
+        'cp -v build/bin/worktips-wallet-rpc' + (if wine then '.exe' else '') + ' worktips-electron-gui-wallet/bin',
+        'cd worktips-electron-gui-wallet',
         'eatmydata npm install',
         'sed -i -e \'s/^\\\\( *"version": ".*\\\\)",/\\\\\\\\1-${DRONE_COMMIT_SHA:0:8}",/\' package.json',
         ] + (if wine then ['sed -i -e \'s/^\\\\( *"build": "quasar.*\\\\)",/\\\\\\\\1 --target=win",/\' package.json'] else []) + [
@@ -175,9 +175,9 @@ local gui_wallet_step_darwin = {
     platform: { os: 'darwin', arch: 'amd64' },
     environment: { SSH_KEY: { from_secret: "SSH_KEY" }, CSC_IDENTITY_AUTO_DISCOVERY: 'false' },
     commands: [
-        'git clone https://github.com/loki-project/loki-electron-gui-wallet.git',
-        'cp -v build/bin/{oxend,oxen-wallet-rpc} loki-electron-gui-wallet/bin',
-        'cd loki-electron-gui-wallet',
+        'git clone https://github.com/worktips-project/worktips-electron-gui-wallet.git',
+        'cp -v build/bin/{worktipsd,worktips-wallet-rpc} worktips-electron-gui-wallet/bin',
+        'cd worktips-electron-gui-wallet',
         'sed -i -e \'s/^\\\\( *"version": ".*\\\\)",/\\\\1-${DRONE_COMMIT_SHA:0:8}",/\' package.json',
         'npm install',
         'npm run build',
@@ -204,16 +204,16 @@ local gui_wallet_step_darwin = {
     debian_pipeline("Debian (ARM64)", "debian:sid", arch="arm64", build_tests=false),
     debian_pipeline("Debian buster (armhf)", "arm32v7/debian:buster", arch="arm64", build_tests=false, cmake_extra='-DDOWNLOAD_SODIUM=ON -DARCH_ID=armhf'),
 
-    // Static build (on bionic) which gets uploaded to builds.lokinet.dev:
+    // Static build (on bionic) which gets uploaded to builds.worktipsnet.dev:
     debian_pipeline("Static (bionic amd64)", "ubuntu:bionic", deps='g++-8 '+static_build_deps,
                     cmake_extra='-DBUILD_STATIC_DEPS=ON -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DARCH=x86-64',
                     build_tests=false, lto=true, extra_cmds=static_check_and_upload,
                     extra_steps=[gui_wallet_step('ubuntu:bionic')]),
 
-    // Static mingw build (on focal) which gets uploaded to builds.lokinet.dev:
+    // Static mingw build (on focal) which gets uploaded to builds.worktipsnet.dev:
     debian_pipeline("Static (win64)", "ubuntu:focal", deps='g++ g++-mingw-w64-x86-64 '+static_build_deps,
                     cmake_extra='-DCMAKE_TOOLCHAIN_FILE=../cmake/64-bit-toolchain.cmake -DBUILD_STATIC_DEPS=ON -DARCH=x86-64',
-                    build_tests=false, lto=false, test_oxend=false, extra_cmds=[
+                    build_tests=false, lto=false, test_worktipsd=false, extra_cmds=[
                         'ninja strip_binaries', 'ninja create_zip', '../utils/build_scripts/drone-static-upload.sh'],
                     extra_steps=[gui_wallet_step('debian:stable', wine=true)]),
 

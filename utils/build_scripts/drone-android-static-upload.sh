@@ -21,7 +21,7 @@ chmod 600 ssh_key
 
 branch_or_tag=${DRONE_BRANCH:-${DRONE_TAG:-unknown}}
 
-upload_to="oxen.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
+upload_to="worktips.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
 
 tmpdir=android-deps-${DRONE_COMMIT}
 mkdir -p $tmpdir/include $tmpdir/lib
@@ -53,7 +53,7 @@ for p in "${upload_dirs[@]}"; do
 -mkdir $dir_tmp"
 done
 
-sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@oxen.rocks <<SFTP
+sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@worktips.rocks <<SFTP
 $mkdirs
 put $filename $upload_to
 SFTP

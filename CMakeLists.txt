@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Worktips Project
 # Copyright (c) 2014-2019, The Monero Project
 #
 # All rights reserved.
@@ -50,17 +50,17 @@ message(STATUS "CMake version ${CMAKE_VERSION}")
 # Has to be set before `project()`, and ignored on non-macos:
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "macOS deployment target (Apple clang only)")
 
-project(oxen
+project(worktips
     VERSION 9.2.0
     LANGUAGES CXX C)
-set(OXEN_RELEASE_CODENAME "Audacious Aurochs")
+set(WORKTIPS_RELEASE_CODENAME "Audacious Aurochs")
 
 # String value to append to the full version string; this is intended to easily identify whether a
 # binary was build from the release or development branches.  This should be permanently set to an
 # empty string on `stable`, "-dev" on the `dev` branch, and can be set externally (via cmake
 # arguments) where it makes sense to take some other branch release with an extra value.
-if(NOT DEFINED OXEN_RELEASE_SUFFIX)
-  set(OXEN_RELEASE_SUFFIX "-dev")
+if(NOT DEFINED WORKTIPS_RELEASE_SUFFIX)
+  set(WORKTIPS_RELEASE_SUFFIX "-dev")
 endif()
 
 if(POLICY CMP0079)
@@ -288,7 +288,7 @@ if(NOT MANUAL_SUBMODULES)
     check_submodule(external/rapidjson)
     check_submodule(external/trezor-common)
     check_submodule(external/randomx)
-    check_submodule(external/loki-mq cppzmq)
+    check_submodule(external/worktips-mq cppzmq)
     if(BUILD_TESTS)
       check_submodule(external/googletest)
     endif()
@@ -479,7 +479,7 @@ if(NOT TARGET sodium)
     target_link_libraries(sodium INTERFACE sodium_vendor)
   endif()
 
-  # Need this target export so that loki-mq properly picks up sodium
+  # Need this target export so that worktips-mq properly picks up sodium
   export(TARGETS sodium NAMESPACE sodium:: FILE sodium-exports.cmake)
 endif()
 
@@ -846,7 +846,7 @@ if (WIN32)
 endif()
 
 if (BUILD_INTEGRATION)
-  target_compile_definitions(extra INTERFACE OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+  target_compile_definitions(extra INTERFACE WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
 else()
   option(USE_READLINE "Build with GNU readline support." ON)
   if(USE_READLINE AND BUILD_STATIC_DEPS)
@@ -930,11 +930,11 @@ endif()
 # Set up a `make strip_binaries` target that strips built binaries.  This depends on all
 # default-built binaries and strips them after build.  (To also build and strip debug utilities
 # there is also a `make strip_binaries_all` target.)
-get_property(oxen_exec_tgts_all GLOBAL PROPERTY oxen_executable_targets)
-set(oxen_exec_tgts "")
+get_property(worktips_exec_tgts_all GLOBAL PROPERTY worktips_executable_targets)
+set(worktips_exec_tgts "")
 set(strip_binaries "")
 set(strip_binaries_all "")
-foreach(tgt ${oxen_exec_tgts_all})
+foreach(tgt ${worktips_exec_tgts_all})
   list(APPEND strip_binaries_all COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${tgt}>)
   # Look for a EXCLUDE_FROM_ALL property:
   get_property(tgt_excl_all TARGET ${tgt} PROPERTY EXCLUDE_FROM_ALL)
@@ -943,12 +943,12 @@ foreach(tgt ${oxen_exec_tgts_all})
   get_property(tgt_dir TARGET ${tgt} PROPERTY SOURCE_DIR)
   get_property(tgt_dir_excl_all DIRECTORY ${tgt_dir} PROPERTY EXCLUDE_FROM_ALL)
   if (NOT tgt_excl_all AND NOT tgt_dir_excl_all)
-    list(APPEND oxen_exec_tgts ${tgt})
+    list(APPEND worktips_exec_tgts ${tgt})
     list(APPEND strip_binaries COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${tgt}>)
   endif()
 endforeach()
-add_custom_target(strip_binaries ${strip_binaries} DEPENDS ${oxen_exec_tgts})
-add_custom_target(strip_binaries_all ${strip_binaries_all} DEPENDS ${oxen_exec_tgts_all})
+add_custom_target(strip_binaries ${strip_binaries} DEPENDS ${worktips_exec_tgts})
+add_custom_target(strip_binaries_all ${strip_binaries_all} DEPENDS ${worktips_exec_tgts_all})
 
 execute_process(COMMAND tar --version RESULT_VARIABLE tar_exit_code OUTPUT_VARIABLE tar_vers)
 set(git_tag "-unknown")
@@ -989,17 +989,17 @@ elseif(tar_os STREQUAL "Windows")
   endif()
   set(default_archive create_zip) # .tar.xz files are too scary for Windows users
 endif()
-set(tar_dir "oxen-${tar_os}-${PROJECT_VERSION}${OXEN_RELEASE_SUFFIX}${git_tag}")
+set(tar_dir "worktips-${tar_os}-${PROJECT_VERSION}${WORKTIPS_RELEASE_SUFFIX}${git_tag}")
 add_custom_target(create_tarxz
   COMMAND ${CMAKE_COMMAND} -E rename bin "${tar_dir}"
   COMMAND ${CMAKE_COMMAND} -E tar cvJ "${tar_dir}.tar.xz" -- "${tar_dir}"
   COMMAND ${CMAKE_COMMAND} -E rename "${tar_dir}" bin
-  DEPENDS ${oxen_exec_tgts})
+  DEPENDS ${worktips_exec_tgts})
 
 add_custom_target(create_zip
   COMMAND ${CMAKE_COMMAND} -E rename bin "${tar_dir}"
   COMMAND ${CMAKE_COMMAND} -E tar cv "${tar_dir}.zip" --format=zip -- "${tar_dir}"
   COMMAND ${CMAKE_COMMAND} -E rename "${tar_dir}" bin
-  DEPENDS ${oxen_exec_tgts})
+  DEPENDS ${worktips_exec_tgts})
 
 add_custom_target(create_archive DEPENDS ${default_archive})

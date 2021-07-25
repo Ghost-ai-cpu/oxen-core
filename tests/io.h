@@ -33,13 +33,13 @@
 #include <iostream>
 #include <type_traits>
 #include <vector>
-#include <oxenmq/hex.h>
+#include <worktipsmq/hex.h>
 
 inline bool hexdecode(const char *from, std::size_t length, void *to) {
   const char* end = from + 2*length;
-  if (!oxenmq::is_hex(from, end))
+  if (!worktipsmq::is_hex(from, end))
     return false;
-  oxenmq::from_hex(from, end, reinterpret_cast<char*>(to));
+  worktipsmq::from_hex(from, end, reinterpret_cast<char*>(to));
   return true;
 }
 

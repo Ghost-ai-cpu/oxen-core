@@ -14,7 +14,7 @@ set -o xtrace  # Don't start tracing until *after* we write the ssh key
 
 chmod 600 ssh_key
 
-filenames=(dist/electron/Packaged/oxen-electron-wallet-*)
+filenames=(dist/electron/Packaged/worktips-electron-wallet-*)
 if [ "${#filenames[@]}" -lt 1 ] || ! [ -f "${filenames[0]}" ]; then
     echo "Did not find expected electron wallet packages"
     find dist/electron
@@ -25,7 +25,7 @@ fi
 # -mkdir a/, -mkdir a/b/, -mkdir a/b/c/, ... commands.  The leading `-` allows the command to fail
 # without error.
 branch_or_tag=${DRONE_BRANCH:-${DRONE_TAG:-unknown}}
-upload_to="oxen.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
+upload_to="worktips.rocks/${DRONE_REPO// /_}/${branch_or_tag// /_}"
 upload_dirs=(${upload_to//\// })
 sftpcmds=
 dir_tmp=""
@@ -39,7 +39,7 @@ for filename in "${filenames[@]}"; do
 put $filename $upload_to"
 done
 
-sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@oxen.rocks <<SFTP
+sftp -i ssh_key -b - -o StrictHostKeyChecking=off drone@worktips.rocks <<SFTP
 $sftpcmds
 SFTP
 
