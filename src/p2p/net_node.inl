@@ -611,22 +611,23 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (nettype == cryptonote::TESTNET)
     {
-      full_addrs.insert("144.76.164.202:38156"); // public.worktips.foundation
+      full_addrs.insert("apple-test.node.worktips.xyz:33021"); // public.worktips.foundation
     }
     else if (nettype == cryptonote::DEVNET)
     {
-      full_addrs.insert("144.76.164.202:38856");
+      full_addrs.insert("apple-stage.node.worktips.xyz:32021");
     }
     else if (nettype == cryptonote::FAKECHAIN)
     {
     }
     else
     {
-      full_addrs.insert("116.203.196.12:22022");  // Hetzner seed node
-      full_addrs.insert("149.56.165.115:22022");  // Jason's seed node
-      full_addrs.insert("192.250.236.196:22022"); // Rangeproof Test VPSC Box
-      full_addrs.insert("144.217.243.15:22022");  // OVH(1)
-      full_addrs.insert("51.38.133.145:22022");   // OVH(2)
+ 	  full_addrs.insert("apple.node.worktips.xyz:31021");
+	  full_addrs.insert("blueberry.node.worktips.xyz:31021");
+	  full_addrs.insert("cherry.node.worktips.xyz:31021");
+	  full_addrs.insert("date.node.worktips.xyz:31021");
+	  full_addrs.insert("144.202.10.128:31021");
+	  full_addrs.insert("107.172.242.234:31021");
     }
     return full_addrs;
   }

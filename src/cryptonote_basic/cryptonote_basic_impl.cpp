@@ -110,23 +110,41 @@ namespace cryptonote {
     uint64_t result = 28'000'000'000. + 100'000'000'000. / worktips::exp2(height / (720. * 90)); // halve every 90 days.
     return result;
   }
+  
+   uint64_t block_reward_unpenalized_formula_v9(uint64_t height)
+  {
+    std::fesetround(FE_TONEAREST);
+    uint64_t result = 28'000'000'000. + 200'000'000'000. / worktips::exp2(height / (720.0 * 90.0)); // halve every 90 days.
+    return result;
+  }
+
+  uint64_t block_reward_unpenalized_formula_v13(uint64_t height)
+  {
+    std::fesetround(FE_TONEAREST);
+    uint64_t result = 30'700'000'000. + 10'000'000'000. / worktips::exp2(height / (3600 * 90.0)); // halve every 90 days.
+    return result;
+  }
 
   bool get_base_block_reward(size_t median_weight, size_t current_block_weight, uint64_t already_generated_coins, uint64_t &reward, uint64_t &reward_unpenalized, uint8_t version, uint64_t height) {
 
     //premine reward
-    if (already_generated_coins == 0)
-    {
-      reward = 22'500'000 * COIN;
+    const uint64_t premine = PREMINE
+    if (median_weight > 0 && already_generated_coins < premine){
+      reward = premine;
       return true;
     }
 
     static_assert((TARGET_BLOCK_TIME % 1min) == 0s, "difficulty targets must be a multiple of a minute");
 
-    uint64_t base_reward =
-      version >= network_version_17 ? BLOCK_REWARD_HF17 :
-      version >= network_version_15_ons ? BLOCK_REWARD_HF15 :
-      version >= network_version_8  ? block_reward_unpenalized_formula_v8(height) :
-        block_reward_unpenalized_formula_v7(already_generated_coins, height);
+uint64_t base_reward = version == network_version_7
+							? block_reward_unpenalized_formula_v7(already_generated_coins, height)
+							: version == network_version_8
+							? block_reward_unpenalized_formula_v8(height)
+							: version >= network_version_9_service_nodes && version <= network_version_11_infinite_staking
+							? block_reward_unpenalized_formula_v9(height)
+							: version >= network_version_12_checkpointing
+							? block_reward_unpenalized_formula_v13(height)
+							: block_reward_unpenalized_formula_v13(height);
 
     uint64_t full_reward_zone = get_min_block_weight(version);
 

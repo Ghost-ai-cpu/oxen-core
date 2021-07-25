@@ -62,12 +62,14 @@ static_assert(STAKING_PORTIONS % 12 == 0, "Use a multiple of twelve, so that it 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               11
 
 #define CRYPTONOTE_REWARD_BLOCKS_WINDOW                 100
-#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1    20000 // NOTE(worktips): For testing suite, //size of block (bytes) after which reward for block calculated using block size - before first fork
+#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2    60000 //size of block (bytes) after which reward for block calculated using block size
+#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1    20000 //size of block (bytes) after which reward for block calculated using block size - before first fork
 #define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5    300000 //size of block (bytes) after which reward for block calculated using block size - second change, from v5
 #define CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE   100000 // size in blocks of the long term block weight median window
 #define CRYPTONOTE_SHORT_TERM_BLOCK_WEIGHT_SURGE_FACTOR 50
 #define CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE          600
-#define CRYPTONOTE_DISPLAY_DECIMAL_POINT                9
+#define CRYPTONOTE_DISPLAY_DECIMAL_POINT                8
+
 
 #define FEE_PER_BYTE_V12                                ((uint64_t)17200) // Higher fee in v12 (only, v13 switches back)
 #define FEE_PER_BYTE_V13                                ((uint64_t)215)   // Fallback used in wallet if no fee is available from RPC
@@ -143,8 +145,8 @@ constexpr uint64_t BLOCKS_EXPECTED_IN_YEARS(int years) { return BLOCKS_EXPECTED_
 #define P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT       70
 #define P2P_DEFAULT_ANCHOR_CONNECTIONS_COUNT            2
 #define P2P_DEFAULT_SYNC_SEARCH_CONNECTIONS_COUNT       2
-#define P2P_DEFAULT_LIMIT_RATE_UP                       2048       // kB/s
-#define P2P_DEFAULT_LIMIT_RATE_DOWN                     8192       // kB/s
+#define P2P_DEFAULT_LIMIT_RATE_UP                       62500       // kB/s
+#define P2P_DEFAULT_LIMIT_RATE_DOWN                     125000       // kB/s
 
 #define P2P_FAILED_ADDR_FORGET_SECONDS                  (60*60)     //1 hour
 #define P2P_IP_BLOCKTIME                                (60*60*24)  //24 hour
@@ -212,28 +214,28 @@ namespace config
 
   // Used to estimate the blockchain height from a timestamp, with some grace time.  This can drift
   // slightly over time (because average block time is not typically *exactly*
-  // DIFFICULTY_TARGET_V2).
+  // DIFFICULTY_TARGET_V2).	
   inline constexpr uint64_t HEIGHT_ESTIMATE_HEIGHT = 582088;
   inline constexpr time_t HEIGHT_ESTIMATE_TIMESTAMP = 1595359932;
 
-  inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 114;
-  inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 115;
-  inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 116;
-  inline constexpr uint16_t P2P_DEFAULT_PORT = 22022;
-  inline constexpr uint16_t RPC_DEFAULT_PORT = 22023;
-  inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 22024;
-  inline constexpr uint16_t QNET_DEFAULT_PORT = 22025;
+  inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x121bb2;//Wtma
+  inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x161bb2;//Wtmi
+  inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x1a9bb2;//Wtms
+  inline constexpr uint16_t P2P_DEFAULT_PORT = 31021;
+  inline constexpr uint16_t RPC_DEFAULT_PORT = 31022;
+  inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 31023;
+  inline constexpr uint16_t QNET_DEFAULT_PORT = 31024;
   inline constexpr boost::uuids::uuid const NETWORK_ID = { {
-        0x46 ,0x61, 0x72, 0x62 ,0x61, 0x75, 0x74, 0x69, 0x2a, 0x4c, 0x61, 0x75, 0x66, 0x65, 0x79
+        0xe1, 0x69 ,0x61, 0x75, 0x61, 0x66, 0x66, 0x65, 0x79, 0x62 ,0x61, 0x75, 0x74, 0x69, 0x44
     } }; // Bender's nightmare
-  inline constexpr std::string_view GENESIS_TX = "021e01ff000380808d93f5d771027c4fd4553bc9886f1f49e3f76d945bf71e8632a94e6c177b19cbc780e7e6bdb48080b4ccd4dfc60302c8b9f6461f58ef3f2107e577c7425d06af584a1c7482bf19060e84059c98b4c3808088fccdbcc32302732b53b0b0db706fcc3087074fb4b786da5ab72b2065699f9453448b0db27f892101ed71f2ce3fc70d7b2036f8a4e4b3fb75c66c12184b55a908e7d1a1d6995566cf00"sv;
-  inline constexpr uint32_t GENESIS_NONCE = 1022201;
+  inline constexpr std::string_view GENESIS_TX = "011e01ff0001dcbda1dfbf02029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101133303ea420f2ee1a883eab2f069e6c41424c60cbf47e14c8509e00ab785740e"sv;
+  inline constexpr uint32_t GENESIS_NONCE = 10221;
 
   inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = BLOCKS_EXPECTED_IN_DAYS(7);
   inline constexpr std::array GOVERNANCE_WALLET_ADDRESS =
   {
-    "LCFxT37LAogDn1jLQKf4y7aAqfi21DjovX9qyijaLYQSdrxY1U5VGcnMJMjWrD9RhjeK5Lym67wZ73uh9AujXLQ1RKmXEyL"sv, // hardfork v7-10
-    "LDBEN6Ut4NkMwyaXWZ7kBEAx8X64o6YtDhLXUP26uLHyYT4nFmcaPU2Z2fauqrhTLh4Qfr61pUUZVLaTHqAdycETKM1STrz"sv, // hardfork v11
+    "WtmaTkuEqKXGsxRxHkrYSAWwHpVtPNGhN4CiPrcSfbhv9WpxPhfKVenBXbccZ946FWHCkigUjiQDLGL5vbRf8sUc5igNcKhqN1"sv, // hardfork v7-10
+    "WtmaTkuEqKXGsxRxHkrYSAWwHpVtPNGhN4CiPrcSfbhv9WpxPhfKVenBXbccZ946FWHCkigUjiQDLGL5vbRf8sUc5igNcKhqN1"sv, // hardfork v11
   };
 
   inline constexpr auto UPTIME_PROOF_TOLERANCE = 5min; // How much an uptime proof timestamp can deviate from our timestamp before we refuse it
@@ -261,24 +263,24 @@ namespace config
   {
     inline constexpr uint64_t HEIGHT_ESTIMATE_HEIGHT = 339767;
     inline constexpr time_t HEIGHT_ESTIMATE_TIMESTAMP = 1595360006;
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 156;
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 157;
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 158;
-    inline constexpr uint16_t P2P_DEFAULT_PORT = 38156;
-    inline constexpr uint16_t RPC_DEFAULT_PORT = 38157;
-    inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 38158;
-    inline constexpr uint16_t QNET_DEFAULT_PORT = 38159;
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x1ddd32;//Wtta
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x221d32;//Wtti
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x269d32;//Wtts
+    inline constexpr uint16_t P2P_DEFAULT_PORT = 33021;
+    inline constexpr uint16_t RPC_DEFAULT_PORT = 33022;
+    inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 33023;
+    inline constexpr uint16_t QNET_DEFAULT_PORT = 33024;
     inline constexpr boost::uuids::uuid const NETWORK_ID = { {
-        0x5f, 0x3a, 0x78, 0x65, 0xe1, 0x6f, 0xca, 0xb8, 0x02, 0xa1, 0xdc, 0x17, 0x61, 0x64, 0x15, 0xbe,
+        0xe1, 0x69, 0x3a, 0x78, 0x65, 0xdc, 0x17, 0x61, 0x64, 0x15, 0xbe, 0x6f, 0xca, 0xb8, 0x02, 0xa1,
       } }; // Bender's daydream
-    inline constexpr std::string_view GENESIS_TX = "03011e001e01ff00018080c9db97f4fb270259b546996f69aa71abe4238995f41d780ab1abebcac9f00e808f147bdb9e3228420112573af8c309b69a1a646f41b5212ba7d9c4590bf86e04f36c486467cfef9d3d72000000000000000000000000000000000000000000000000000000000000000000"sv;
+    inline constexpr std::string_view GENESIS_TX = "011e01ff0001dcbda1dfbf02029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210130a4be58ee8e15f0e4223816f65703c10266e5d00c7a3f11c720b10c8e3f323b"sv;
     inline constexpr uint32_t GENESIS_NONCE = 10001;
 
     inline constexpr uint64_t GOVERNANCE_REWARD_INTERVAL_IN_BLOCKS = 1000;
     inline constexpr std::array GOVERNANCE_WALLET_ADDRESS =
     {
-      "T6SUprTYE5rQpep9iQFxyPcKVd91DFR1fQ1Qsyqp5eYLiFc8XuYd3reRE71qDL8c3DXioUbDEpDFdaUpetnL37NS1R3rzoKxi"sv, // hardfork v7-9
-      "T6TzkJb5EiASaCkcH7idBEi1HSrpSQJE1Zq3aL65ojBMPZvqHNYPTL56i3dncGVNEYCG5QG5zrBmRiVwcg6b1cRM1SRNqbp44"sv, // hardfork v10
+      "WttaWHRd9qfSFTtuv3HpGtjWKBbuyKv9VMtwB64KQVSEgGJPpLzTckX1RYZxUXtVD6HMHQ9rWuz1bcA5PqUrnyGW71qPNE4fd9"sv, // hardfork v7-9
+      "WttaWHRd9qfSFTtuv3HpGtjWKBbuyKv9VMtwB64KQVSEgGJPpLzTckX1RYZxUXtVD6HMHQ9rWuz1bcA5PqUrnyGW71qPNE4fd9"sv, // hardfork v10
     };
 
     // Testnet uptime proofs are 6x faster than mainnet (devnet config also uses these)
@@ -290,13 +292,13 @@ namespace config
   {
     inline constexpr uint64_t HEIGHT_ESTIMATE_HEIGHT = 0;
     inline constexpr time_t HEIGHT_ESTIMATE_TIMESTAMP = 1597170000;
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 3930; // ~ dV1 .. dV3
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 4442; // ~ dVA .. dVC
-    inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 5850; // ~dVa .. dVc
-    inline constexpr uint16_t P2P_DEFAULT_PORT = 38856;
-    inline constexpr uint16_t RPC_DEFAULT_PORT = 38857;
-    inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 38858;
-    inline constexpr uint16_t QNET_DEFAULT_PORT = 38859;
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xdd32;//Wtsa
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x4dd32;//Wtsi
+    inline constexpr uint64_t CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x95d32;//Wtss
+    inline constexpr uint16_t P2P_DEFAULT_PORT = 32021;
+    inline constexpr uint16_t RPC_DEFAULT_PORT = 32022;
+    inline constexpr uint16_t ZMQ_RPC_DEFAULT_PORT = 32023;
+    inline constexpr uint16_t QNET_DEFAULT_PORT = 32024;
     inline constexpr boost::uuids::uuid const NETWORK_ID = { {
         0xa9, 0xf7, 0x5c, 0x7d, 0x55, 0x17, 0xcb, 0x6b, 0x5b, 0xf4, 0x63, 0x79, 0x7a, 0x57, 0xab, 0xd3
       } };

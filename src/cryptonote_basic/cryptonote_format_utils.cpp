@@ -1059,7 +1059,7 @@ namespace cryptonote
       decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
     switch (decimal_point)
     {
-      case 9:
+      case 8:
         return "worktips";
       case 6:
         return "megarok";

@@ -1675,7 +1675,7 @@ namespace cryptonote { namespace rpc {
       throw rpc_error{ERROR_INTERNAL, "Internal error: failed to create block template"};
     }
 
-    if (b.major_version >= network_version_12_checkpointing)
+    if (b.major_version < network_version_7)
     {
       uint64_t seed_height, next_height;
       crypto::hash seed_hash;
