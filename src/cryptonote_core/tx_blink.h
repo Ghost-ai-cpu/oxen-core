@@ -1,4 +1,5 @@
 // Copyright (c) 2019, The Worktips Project
+// Copyright (c) 2019, The Loki Project
 //
 // All rights reserved.
 //
