@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -35,8 +35,8 @@
 #include "multisig.h"
 #include "cryptonote_config.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "multisig"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "multisig"
 
 using namespace std;
 

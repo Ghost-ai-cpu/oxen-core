@@ -39,8 +39,8 @@
 #include "blockchain_objects.h"
 #include "version.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "bcutil"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "bcutil"
 
 #define MDB_val_set(var, val)   MDB_val var = {sizeof(val), (void *)&val}
 
@@ -156,7 +156,7 @@ static void copy_table(MDB_env *env0, MDB_env *env1, const char *table, unsigned
 
   MINFO("Copying " << table);
 
-  OXEN_DEFER {
+  WORKTIPS_DEFER {
     if (tx_active1) mdb_txn_abort(txn1);
     if (tx_active0) mdb_txn_abort(txn0);
   };
@@ -253,7 +253,7 @@ static void prune(MDB_env *env0, MDB_env *env1)
 
   MGINFO("Creating pruned txs_prunable");
 
-  OXEN_DEFER {
+  WORKTIPS_DEFER {
     if (tx_active1) mdb_txn_abort(txn1);
     if (tx_active0) mdb_txn_abort(txn0);
   };
@@ -479,12 +479,12 @@ int main(int argc, char* argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
   {
-    std::cout << "Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")\n\n";
+    std::cout << "Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")\n\n";
     std::cout << desc_options << std::endl;
     return 1;
   }
 
-  mlog_configure(mlog_get_default_log_path("oxen-blockchain-prune.log"), true);
+  mlog_configure(mlog_get_default_log_path("worktips-blockchain-prune.log"), true);
   if (!command_line::is_arg_defaulted(vm, arg_log_level))
     mlog_set_log(command_line::get_arg(vm, arg_log_level).c_str());
   else

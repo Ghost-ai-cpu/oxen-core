@@ -38,8 +38,8 @@
 #include "epee/misc_os_dependent.h"
 #include "cryptonote_core/uptime_proof.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "bcutil"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "bcutil"
 
 namespace po = boost::program_options;
 using namespace cryptonote;
@@ -98,12 +98,12 @@ int main(int argc, char* argv[])
 
   if (command_line::get_arg(vm, command_line::arg_help))
   {
-    std::cout << "Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")\n\n";
+    std::cout << "Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")\n\n";
     std::cout << desc_options << std::endl;
     return 1;
   }
 
-  mlog_configure(mlog_get_default_log_path("oxen-blockchain-stats.log"), true);
+  mlog_configure(mlog_get_default_log_path("worktips-blockchain-stats.log"), true);
   if (!command_line::is_arg_defaulted(vm, arg_log_level))
     mlog_set_log(command_line::get_arg(vm, arg_log_level).c_str());
   else
@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 /*
  * The default output can be plotted with GnuPlot using these commands:
 set key autotitle columnhead
-set title "Oxen Blockchain Growth"
+set title "Worktips Blockchain Growth"
 set timefmt "%Y-%m-%d"
 set xdata time
 set xrange ["2014-04-17":*]

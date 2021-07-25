@@ -39,11 +39,11 @@
 #include "epee/misc_log_ex.h"
 #include "util.h"
 #include "spawn.h"
-#include "oxen.h"
+#include "worktips.h"
 #include "string_util.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "spawn"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "spawn"
 
 namespace tools
 {
@@ -87,7 +87,7 @@ int spawn(const fs::path& filename, const std::vector<std::string>& args, bool w
     return -1;
   }
 
-  OXEN_DEFER {
+  WORKTIPS_DEFER {
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
   };

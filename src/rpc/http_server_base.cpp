@@ -1,7 +1,7 @@
 
 #include "http_server_base.h"
-#include <oxenmq/base64.h>
-#include <oxenmq/hex.h>
+#include <worktipsmq/base64.h>
+#include <worktipsmq/hex.h>
 #include "common/string_util.h"
 
 // epee:
@@ -25,9 +25,9 @@ namespace cryptonote::rpc {
   std::optional<std::string> check_authorization(std::string_view auth_header, std::string_view realm, Callback check_login) {
     std::string fail = "Basic realm=\"" + std::string{realm} + "\", charset=\"UTF-8\"";
     auto parts = tools::split_any(auth_header, " \t\r\n", true);
-    if (parts.size() < 2 || parts[0] != "Basic"sv || !oxenmq::is_base64(parts[1]))
+    if (parts.size() < 2 || parts[0] != "Basic"sv || !worktipsmq::is_base64(parts[1]))
       return fail;
-    auto login = oxenmq::from_base64(parts[1]);
+    auto login = worktipsmq::from_base64(parts[1]);
     auto colon = login.find(':');
     if (colon == std::string_view::npos)
       return fail;
@@ -40,7 +40,7 @@ namespace cryptonote::rpc {
 
   bool http_server_base::check_auth(HttpRequest& req, HttpResponse& res)
   {
-    if (auto www_auth = check_authorization(req.getHeader("authorization"), "oxend rpc",
+    if (auto www_auth = check_authorization(req.getHeader("authorization"), "worktipsd rpc",
           [this] (const std::string_view user, const std::string_view pass) {
             return user == m_login->username && pass == m_login->password.password().view(); }))
     {
@@ -144,7 +144,7 @@ namespace cryptonote::rpc {
       result << ']';
     }
     else
-      result << "{unknown:" << oxenmq::to_hex(addr) << "}";
+      result << "{unknown:" << worktipsmq::to_hex(addr) << "}";
     return result.str();
   }
 

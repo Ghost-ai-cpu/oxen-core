@@ -5,8 +5,8 @@
 #include "common/string_util.h"
 #include "cpr/ssl_options.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "rpc.http_client"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "rpc.http_client"
 
 namespace cryptonote::rpc {
 

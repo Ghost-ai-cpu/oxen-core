@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -28,17 +28,17 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <oxenmq/hex.h>
+#include <worktipsmq/hex.h>
 #include "epee/misc_log_ex.h"
 #include "log.hpp"
 
 namespace hw {
 
-  #undef OXEN_DEFAULT_LOG_CATEGORY
-  #define OXEN_DEFAULT_LOG_CATEGORY "device"
+  #undef WORKTIPS_DEFAULT_LOG_CATEGORY
+  #define WORKTIPS_DEFAULT_LOG_CATEGORY "device"
 
   void log_hexbuffer(std::string_view msg, const void* buff, size_t len) {
-    MDEBUG(msg << ": " << oxenmq::to_hex(std::string_view{reinterpret_cast<const char*>(buff), len}));
+    MDEBUG(msg << ": " << worktipsmq::to_hex(std::string_view{reinterpret_cast<const char*>(buff), len}));
   }
 
   void log_message(std::string_view msg, std::string_view info) {
@@ -49,8 +49,8 @@ namespace hw {
   #ifdef WITH_DEVICE_LEDGER    
     namespace ledger {
     
-    #undef OXEN_DEFAULT_LOG_CATEGORY
-    #define OXEN_DEFAULT_LOG_CATEGORY "device.ledger"
+    #undef WORKTIPS_DEFAULT_LOG_CATEGORY
+    #define WORKTIPS_DEFAULT_LOG_CATEGORY "device.ledger"
 
     
     #ifdef DEBUG_HWDEVICE
@@ -119,7 +119,7 @@ namespace hw {
           log_hexbuffer("    host  ", h, len);
           log_hexbuffer("    device", d, len);
       } else {
-        log_message("ASSERT EQ OK",  msg + ": " + info + ": " + oxenmq::to_hex(d, d+len));
+        log_message("ASSERT EQ OK",  msg + ": " + info + ": " + worktipsmq::to_hex(d, d+len));
       }
     }
 

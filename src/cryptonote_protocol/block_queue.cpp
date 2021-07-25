@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2017-2019, The Monero Project
 // 
 // All rights reserved.
@@ -38,8 +38,8 @@
 #include "common/pruning.h"
 #include "block_queue.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "cn.block_queue"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "cn.block_queue"
 
 namespace std {
 template<>

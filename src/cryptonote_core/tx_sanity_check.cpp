@@ -33,8 +33,8 @@
 #include "blockchain.h"
 #include "tx_sanity_check.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "verify"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "verify"
 
 namespace cryptonote
 {

@@ -1,5 +1,5 @@
 // Copyright (c) 2016-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -31,8 +31,8 @@
 #include "epee/misc_os_dependent.h"
 #include "perf_timer.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "perf"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "perf"
 
 #define PERF_LOG_ALWAYS(level, cat, x) \
   el::base::Writer(level, __FILE__, __LINE__, ELPP_FUNC, el::base::DispatchAction::FileOnlyLog).construct(cat) << x

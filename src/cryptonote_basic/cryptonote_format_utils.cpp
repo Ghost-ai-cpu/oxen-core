@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -32,7 +32,7 @@
 #include <atomic>
 #include <boost/algorithm/string.hpp>
 #include <limits>
-#include <oxenmq/hex.h>
+#include <worktipsmq/hex.h>
 #include <variant>
 #include "common/hex.h"
 #include "epee/wipeable_string.h"
@@ -48,10 +48,10 @@
 #include "ringct/rctSigs.h"
 #include "cryptonote_basic/verification_context.h"
 #include "cryptonote_core/service_node_voting.h"
-#include "cryptonote_core/oxen_name_system.h"
+#include "cryptonote_core/worktips_name_system.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "cn"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "cn"
 
 using namespace crypto;
 
@@ -546,7 +546,7 @@ namespace cryptonote
     try {
       serialization::deserialize_all(ar, tx_extra_fields);
     } catch (const std::exception& e) {
-      MWARNING(__func__ << ": failed to deserialize extra field: " << e.what() << "; extra = " << oxenmq::to_hex(tx_extra.begin(), tx_extra.end()));
+      MWARNING(__func__ << ": failed to deserialize extra field: " << e.what() << "; extra = " << worktipsmq::to_hex(tx_extra.begin(), tx_extra.end()));
       return false;
     }
 
@@ -788,7 +788,7 @@ namespace cryptonote
     return crypto::null_pkey;
   }
   //---------------------------------------------------------------
-  void add_oxen_name_system_to_tx_extra(std::vector<uint8_t> &tx_extra, tx_extra_oxen_name_system const &entry)
+  void add_worktips_name_system_to_tx_extra(std::vector<uint8_t> &tx_extra, tx_extra_worktips_name_system const &entry)
   {
     tx_extra_field field = entry;
     add_tx_extra_field_to_tx_extra(tx_extra, field);
@@ -812,7 +812,7 @@ namespace cryptonote
           value(newar, field);
       } while (ar.remaining_bytes() > 0);
     } catch (const std::exception& e) {
-      LOG_PRINT_L1(__func__ << ": failed to deserialize extra field: " << e.what() << "; extra = " << oxenmq::to_hex(tx_extra.begin(), tx_extra.end()));
+      LOG_PRINT_L1(__func__ << ": failed to deserialize extra field: " << e.what() << "; extra = " << worktipsmq::to_hex(tx_extra.begin(), tx_extra.end()));
       return false;
     }
 
@@ -974,7 +974,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::string short_hash_str(const crypto::hash& h)
   {
-    return oxenmq::to_hex(tools::view_guts(h).substr(0, 4)) + "....";
+    return worktipsmq::to_hex(tools::view_guts(h).substr(0, 4)) + "....";
   }
   //---------------------------------------------------------------
   bool is_out_to_acc(const account_keys& acc, const txout_to_key& out_key, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, size_t output_index)
@@ -1059,7 +1059,7 @@ namespace cryptonote
     switch (decimal_point)
     {
       case 9:
-        return "oxen";
+        return "worktips";
       case 6:
         return "megarok";
       case 3:
@@ -1277,7 +1277,7 @@ namespace cryptonote
     const blobdata blob = tx_to_blob(t);
     CHECK_AND_ASSERT_MES(!blob.empty(), false, "Failed to convert tx to blob");
 
-    // TODO(oxen): Not sure if this is the right fix, we may just want to set
+    // TODO(worktips): Not sure if this is the right fix, we may just want to set
     // unprunable size to the size of the prefix because technically that is
     // what it is and then keep this code path.
     if (t.is_transfer())

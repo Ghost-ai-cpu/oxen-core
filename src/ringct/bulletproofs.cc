@@ -43,8 +43,8 @@ extern "C"
 #include "multiexp.h"
 #include "bulletproofs.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "bulletproofs"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "bulletproofs"
 
 //#define DEBUG_BP
 

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -40,11 +40,11 @@
 #include "crypto/hash.h"
 #include "epee/int-util.h"
 #include "common/dns_utils.h"
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include <cfenv>
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "cn"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "cn"
 
 namespace cryptonote {
 
@@ -91,7 +91,7 @@ namespace cryptonote {
     return CRYPTONOTE_MAX_TX_SIZE;
   }
   //-----------------------------------------------------------------------------------------------
-  // TODO(oxen): Move into oxen_economy, this will require access to oxen::exp2
+  // TODO(worktips): Move into worktips_economy, this will require access to worktips::exp2
   uint64_t block_reward_unpenalized_formula_v7(uint64_t already_generated_coins, uint64_t height)
   {
     uint64_t emission_supply_component = (already_generated_coins * EMISSION_SUPPLY_MULTIPLIER) / EMISSION_SUPPLY_DIVISOR;
@@ -106,7 +106,7 @@ namespace cryptonote {
   uint64_t block_reward_unpenalized_formula_v8(uint64_t height)
   {
     std::fesetround(FE_TONEAREST);
-    uint64_t result = 28'000'000'000. + 100'000'000'000. / oxen::exp2(height / (720. * 90)); // halve every 90 days.
+    uint64_t result = 28'000'000'000. + 100'000'000'000. / worktips::exp2(height / (720. * 90)); // halve every 90 days.
     return result;
   }
 

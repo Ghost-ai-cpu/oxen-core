@@ -7,8 +7,8 @@ extern "C"
 #include <sodium/crypto_sign.h>
 }
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "uptime_proof"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "uptime_proof"
 
 namespace uptime_proof
 {
@@ -20,9 +20,9 @@ Proof::Proof(
         uint16_t sn_storage_omq_port,
         const std::array<uint16_t, 3> ss_version,
         uint16_t quorumnet_port,
-        const std::array<uint16_t, 3> lokinet_version,
+        const std::array<uint16_t, 3> worktipsnet_version,
         const service_nodes::service_node_keys& keys) :
-    version{OXEN_VERSION},
+    version{WORKTIPS_VERSION},
     pubkey{keys.pub},
     timestamp{static_cast<uint64_t>(time(nullptr))},
     public_ip{sn_public_ip},
@@ -31,7 +31,7 @@ Proof::Proof(
     storage_https_port{sn_storage_https_port},
     storage_omq_port{sn_storage_omq_port},
     storage_server_version{ss_version},
-    lokinet_version{lokinet_version}
+    worktipsnet_version{worktipsnet_version}
 {
   crypto::hash hash = hash_uptime_proof();
 
@@ -43,7 +43,7 @@ Proof::Proof(
 Proof::Proof(const std::string& serialized_proof)
 {
   try {
-    using namespace oxenmq;
+    using namespace worktipsmq;
 
     const bt_dict bt_proof = bt_deserialize<bt_dict>(serialized_proof);
     //snode_version <X,X,X>
@@ -75,11 +75,11 @@ Proof::Proof(const std::string& serialized_proof)
     for (bt_value const &i: bt_storage_version){
       storage_server_version[k++] = static_cast<uint16_t>(get_int<unsigned>(i));
     }
-    //lokinet_version
-    const bt_list& bt_lokinet_version = var::get<bt_list>(bt_proof.at("lv"));
+    //worktipsnet_version
+    const bt_list& bt_worktipsnet_version = var::get<bt_list>(bt_proof.at("lv"));
     k = 0;
-    for (bt_value const &i: bt_lokinet_version){
-      lokinet_version[k++] = static_cast<uint16_t>(get_int<unsigned>(i));
+    for (bt_value const &i: bt_worktipsnet_version){
+      worktipsnet_version[k++] = static_cast<uint16_t>(get_int<unsigned>(i));
     }
   } catch (const std::exception& e) {
     MWARNING("deserialization failed: " <<  e.what());
@@ -98,11 +98,11 @@ crypto::hash Proof::hash_uptime_proof() const
   return result;
 }
 
-oxenmq::bt_dict Proof::bt_encode_uptime_proof() const
+worktipsmq::bt_dict Proof::bt_encode_uptime_proof() const
 {
-  oxenmq::bt_dict encoded_proof{
+  worktipsmq::bt_dict encoded_proof{
     //version
-    {"v", oxenmq::bt_list{{version[0], version[1], version[2]}}},
+    {"v", worktipsmq::bt_list{{version[0], version[1], version[2]}}},
     //timestamp
     {"t", timestamp},
     //public_ip
@@ -116,9 +116,9 @@ oxenmq::bt_dict Proof::bt_encode_uptime_proof() const
     //storage_omq_port
     {"sop", storage_omq_port},
     //storage_version
-    {"sv", oxenmq::bt_list{{storage_server_version[0], storage_server_version[1], storage_server_version[2]}}},
-    //lokinet_version
-    {"lv", oxenmq::bt_list{{lokinet_version[0], lokinet_version[1], lokinet_version[2]}}},
+    {"sv", worktipsmq::bt_list{{storage_server_version[0], storage_server_version[1], storage_server_version[2]}}},
+    //worktipsnet_version
+    {"lv", worktipsmq::bt_list{{worktipsnet_version[0], worktipsnet_version[1], worktipsnet_version[2]}}},
   };
 
   if (tools::view_guts(pubkey) != tools::view_guts(pubkey_ed25519)) {
@@ -155,7 +155,7 @@ bool operator==(const uptime_proof::Proof& lhs, const uptime_proof::Proof& rhs)
         (lhs.qnet_port != rhs.qnet_port) ||
         (lhs.version != rhs.version) ||
         (lhs.storage_server_version != rhs.storage_server_version) ||
-        (lhs.lokinet_version != rhs.lokinet_version))
+        (lhs.worktipsnet_version != rhs.worktipsnet_version))
        result = false;
 
    return result;

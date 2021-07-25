@@ -33,11 +33,11 @@
 #include <boost/serialization/version.hpp>
 #include <ostream>
 
-#include "common/oxen.h"
+#include "common/worktips.h"
 
 namespace cryptonote
 {
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct subaddress_index
   {
     uint32_t major; // The account index, major index

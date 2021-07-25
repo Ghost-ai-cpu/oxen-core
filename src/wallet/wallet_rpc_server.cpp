@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -54,11 +54,11 @@
 #include "rpc/rpc_args.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "daemonizer/daemonizer.h"
-#include "cryptonote_core/oxen_name_system.h"
+#include "cryptonote_core/worktips_name_system.h"
 #include "serialization/boost_std_variant.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "wallet.rpc"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "wallet.rpc"
 
 namespace rpc = cryptonote::rpc;
 using namespace tools::wallet_rpc;
@@ -73,7 +73,7 @@ namespace
   const command_line::arg_descriptor<std::string> arg_wallet_dir = {"wallet-dir", "Directory for newly created wallets"};
   const command_line::arg_descriptor<bool> arg_prompt_for_password = {"prompt-for-password", "Prompts for password when not provided", false};
 
-  constexpr const char default_rpc_username[] = "oxen";
+  constexpr const char default_rpc_username[] = "worktips";
 
   std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
   {
@@ -500,7 +500,7 @@ namespace tools
 
     m_restricted = command_line::get_arg(m_vm, arg_restricted);
 
-    m_server_header = "oxen-wallet-rpc/"s + (m_restricted ? std::to_string(OXEN_VERSION[0]) : std::string{OXEN_VERSION_STR});
+    m_server_header = "worktips-wallet-rpc/"s + (m_restricted ? std::to_string(WORKTIPS_VERSION[0]) : std::string{WORKTIPS_VERSION_STR});
 
     m_cors = {rpc_config.access_control_origins.begin(), rpc_config.access_control_origins.end()};
 
@@ -546,7 +546,7 @@ namespace tools
           epee::string_encoding::base64_encode(rand_128bit.data(), rand_128bit.size())
         );
 
-        std::string temp = "oxen-wallet-rpc." + std::to_string(port) + ".login";
+        std::string temp = "worktips-wallet-rpc." + std::to_string(port) + ".login";
         rpc_login_file = tools::private_file::create(temp);
         if (!rpc_login_file.handle())
         {
@@ -882,7 +882,7 @@ namespace tools
             if (!dnssec_valid)
               throw wallet_rpc_error{error_code::WRONG_ADDRESS, "Invalid DNSSEC for "s + std::string{url}};
             if (addresses.empty())
-              throw wallet_rpc_error{error_code::WRONG_ADDRESS, "No Oxen address found at "s + std::string{url}};
+              throw wallet_rpc_error{error_code::WRONG_ADDRESS, "No Worktips address found at "s + std::string{url}};
             return addresses[0];
           }))
           throw wallet_rpc_error{error_code::WRONG_ADDRESS, "Invalid address: "s + std::string{addr_or_url}};
@@ -897,7 +897,7 @@ namespace tools
           if (!dnssec_valid)
             throw wallet_rpc_error{error_code::WRONG_ADDRESS, "Invalid DNSSEC for "s + std::string{url}};
           if (addresses.empty())
-            throw wallet_rpc_error{error_code::WRONG_ADDRESS, "No Oxen address found at "s + std::string{url}};
+            throw wallet_rpc_error{error_code::WRONG_ADDRESS, "No Worktips address found at "s + std::string{url}};
           return addresses[0];
         }))
         throw wallet_rpc_error{error_code::WRONG_ADDRESS, "Invalid address: "s + std::string{addr_or_url}};
@@ -954,7 +954,7 @@ namespace tools
     {
       return "";
     }
-    return oxenmq::to_hex(oss.str());
+    return worktipsmq::to_hex(oss.str());
   }
   //------------------------------------------------------------------------------------------------------------------------------
   template<typename T> static bool is_error_value(const T &val) { return false; }
@@ -1004,14 +1004,14 @@ namespace tools
 
     if (m_wallet->multisig())
     {
-      multisig_txset = oxenmq::to_hex(m_wallet->save_multisig_tx(ptx_vector));
+      multisig_txset = worktipsmq::to_hex(m_wallet->save_multisig_tx(ptx_vector));
       if (multisig_txset.empty())
         throw wallet_rpc_error{error_code::UNKNOWN_ERROR, "Failed to save multisig tx set after creation"};
     }
     else
     {
       if (m_wallet->watch_only()){
-        unsigned_txset = oxenmq::to_hex(m_wallet->dump_tx_to_str(ptx_vector));
+        unsigned_txset = worktipsmq::to_hex(m_wallet->dump_tx_to_str(ptx_vector));
         if (unsigned_txset.empty())
           throw wallet_rpc_error{error_code::UNKNOWN_ERROR, "Failed to save unsigned tx set after creation"};
       }
@@ -1022,7 +1022,7 @@ namespace tools
       for (auto & ptx : ptx_vector)
       {
         bool r = fill(tx_hash, tools::type_to_hex(cryptonote::get_transaction_hash(ptx.tx)));
-        r = r && (!get_tx_hex || fill(tx_blob, oxenmq::to_hex(tx_to_blob(ptx.tx))));
+        r = r && (!get_tx_hex || fill(tx_blob, worktipsmq::to_hex(tx_to_blob(ptx.tx))));
         r = r && (!get_tx_metadata || fill(tx_metadata, ptx_to_string(ptx)));
         if (!r)
           throw wallet_rpc_error{error_code::UNKNOWN_ERROR, "Failed to save tx info"};
@@ -1049,7 +1049,7 @@ namespace tools
       std::optional<uint8_t> hf_version = m_wallet->get_hard_fork_version();
       if (!hf_version)
         throw wallet_rpc_error{error_code::HF_QUERY_FAILED, tools::ERR_MSG_NETWORK_VERSION_QUERY_FAILED};
-      cryptonote::oxen_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, cryptonote::txtype::standard, priority);
+      cryptonote::worktips_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, cryptonote::txtype::standard, priority);
       std::vector<wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, CRYPTONOTE_DEFAULT_TX_MIXIN, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices, tx_params);
 
       if (ptx_vector.empty())
@@ -1084,7 +1084,7 @@ namespace tools
       if (!hf_version)
         throw wallet_rpc_error{error_code::HF_QUERY_FAILED, tools::ERR_MSG_NETWORK_VERSION_QUERY_FAILED};
 
-      cryptonote::oxen_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, cryptonote::txtype::standard, priority);
+      cryptonote::worktips_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, cryptonote::txtype::standard, priority);
       LOG_PRINT_L2("on_transfer_split calling create_transactions_2");
       std::vector<wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, CRYPTONOTE_DEFAULT_TX_MIXIN, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices, tx_params);
       LOG_PRINT_L2("on_transfer_split called create_transactions_2");
@@ -1122,7 +1122,7 @@ namespace tools
       if (ciphertext.empty())
         throw wallet_rpc_error{error_code::SIGN_UNSIGNED, "Failed to sign unsigned tx"};
 
-      res.signed_txset = oxenmq::to_hex(ciphertext);
+      res.signed_txset = worktipsmq::to_hex(ciphertext);
     }
 
     for (auto &ptx: ptxs)
@@ -1140,7 +1140,7 @@ namespace tools
     {
       for (auto &ptx: ptxs)
       {
-        res.tx_raw_list.push_back(oxenmq::to_hex(cryptonote::tx_to_blob(ptx.tx)));
+        res.tx_raw_list.push_back(worktipsmq::to_hex(cryptonote::tx_to_blob(ptx.tx)));
       }
     }
 
@@ -2008,7 +2008,7 @@ namespace tools
 
     for (wallet::transfer_view& entry : transfers)
     {
-      // TODO(oxen): This discrepancy between having to use pay_type if type is
+      // TODO(worktips): This discrepancy between having to use pay_type if type is
       // empty and type if pay type is neither is super unintuitive.
       if (entry.pay_type == wallet::pay_type::in ||
           entry.pay_type == wallet::pay_type::miner ||
@@ -2139,7 +2139,7 @@ namespace tools
     if (m_wallet->key_on_device())
       throw wallet_rpc_error{error_code::UNKNOWN_ERROR, "command not supported by HW wallet"};
 
-    res.outputs_data_hex = oxenmq::to_hex(m_wallet->export_outputs_to_str(req.all));
+    res.outputs_data_hex = worktipsmq::to_hex(m_wallet->export_outputs_to_str(req.all));
 
     return res;
   }
@@ -2742,7 +2742,7 @@ namespace {
     cryptonote::blobdata info;
     info = m_wallet->export_multisig();
 
-    res.info = oxenmq::to_hex(info);
+    res.info = worktipsmq::to_hex(info);
 
     return res;
   }
@@ -2861,7 +2861,7 @@ namespace {
       throw wallet_rpc_error{error_code::MULTISIG_SIGNATURE, "Failed to sign multisig tx: "s + e.what()};
     }
 
-    res.tx_data_hex = oxenmq::to_hex(m_wallet->save_multisig_tx(txs));
+    res.tx_data_hex = worktipsmq::to_hex(m_wallet->save_multisig_tx(txs));
     if (!txids.empty())
     {
       for (const crypto::hash &txid: txids)
@@ -2993,7 +2993,7 @@ namespace {
   //------------------------------------------------------------------------------------------------------------------------------
 
   //
-  // Oxen
+  // Worktips
   //
   STAKE::response wallet_rpc_server::invoke(STAKE::request&& req)
   {
@@ -3034,7 +3034,7 @@ namespace {
         args.erase(args.begin());
     }
 
-    // NOTE(oxen): Pre-emptively set subaddr_account to 0. We don't support onwards from Infinite Staking which is when this call was implemented.
+    // NOTE(worktips): Pre-emptively set subaddr_account to 0. We don't support onwards from Infinite Staking which is when this call was implemented.
     tools::wallet2::register_service_node_result register_result = m_wallet->create_register_service_node_tx(args, 0 /*subaddr_account*/);
     if (register_result.status != tools::wallet2::register_service_node_result_status::success)
       throw wallet_rpc_error{error_code::TX_NOT_POSSIBLE, register_result.msg};
@@ -3061,7 +3061,7 @@ namespace {
     return res;
   }
 
-  // TODO(oxen): Deprecate this and make it return the TX as hex? Then just transfer it as normal? But these have no fees and or amount .. so maybe not?
+  // TODO(worktips): Deprecate this and make it return the TX as hex? Then just transfer it as normal? But these have no fees and or amount .. so maybe not?
   REQUEST_STAKE_UNLOCK::response wallet_rpc_server::invoke(REQUEST_STAKE_UNLOCK::request&& req)
   {
     require_open();
@@ -3284,8 +3284,8 @@ namespace {
     {
       auto& entry = res.known_names.emplace_back();
       auto& type = entry_types.emplace_back(details.type);
-      if (type > ons::mapping_type::lokinet && type <= ons::mapping_type::lokinet_10years)
-        type = ons::mapping_type::lokinet;
+      if (type > ons::mapping_type::worktipsnet && type <= ons::mapping_type::worktipsnet_10years)
+        type = ons::mapping_type::worktipsnet;
       entry.type = ons::mapping_type_str(type);
       entry.hashed = details.hashed_name;
       entry.name = details.name;
@@ -3297,7 +3297,7 @@ namespace {
 
     uint64_t curr_height = req.include_expired ? m_wallet->get_blockchain_current_height() : 0;
 
-    // Query oxend for the full record info
+    // Query worktipsd for the full record info
     for (auto it = res.known_names.begin(); it != res.known_names.end(); )
     {
       const size_t num_entries = std::distance(it, res.known_names.end());
@@ -3334,12 +3334,12 @@ namespace {
             res_e.expired = *res_e.expiration_height < curr_height;
           res_e.txid = std::move(rec.txid);
 
-          if (req.decrypt && !res_e.encrypted_value.empty() && oxenmq::is_hex(res_e.encrypted_value))
+          if (req.decrypt && !res_e.encrypted_value.empty() && worktipsmq::is_hex(res_e.encrypted_value))
           {
             ons::mapping_value value;
             const auto type = entry_types[type_offset + rec.entry_index];
             std::string errmsg;
-            if (ons::mapping_value::validate_encrypted(type, oxenmq::from_hex(res_e.encrypted_value), &value, &errmsg)
+            if (ons::mapping_value::validate_encrypted(type, worktipsmq::from_hex(res_e.encrypted_value), &value, &errmsg)
                 && value.decrypt(res_e.name, type))
               res_e.value = value.to_readable_value(nettype, type);
             else
@@ -3403,7 +3403,7 @@ namespace {
     if (req.encrypted_value.size() >= (ons::mapping_value::BUFFER_SIZE * 2))
       throw wallet_rpc_error{error_code::ONS_VALUE_TOO_LONG, "Value too long to decrypt=" + req.encrypted_value};
 
-    if (!oxenmq::is_hex(req.encrypted_value))
+    if (!worktipsmq::is_hex(req.encrypted_value))
       throw wallet_rpc_error{error_code::ONS_VALUE_NOT_HEX, "Value is not hex=" + req.encrypted_value};
 
     // ---------------------------------------------------------------------------------------------
@@ -3432,7 +3432,7 @@ namespace {
     ons::mapping_value value = {};
     value.len = req.encrypted_value.size() / 2;
     value.encrypted = true;
-    oxenmq::from_hex(req.encrypted_value.begin(), req.encrypted_value.end(), value.buffer.begin());
+    worktipsmq::from_hex(req.encrypted_value.begin(), req.encrypted_value.end(), value.buffer.begin());
 
     if (!value.decrypt(req.name, type))
       throw wallet_rpc_error{error_code::ONS_VALUE_NOT_HEX, "Value decryption failure"};
@@ -3467,7 +3467,7 @@ namespace {
     if (!value.encrypt(req.name, nullptr, old_argon2))
       throw wallet_rpc_error{error_code::ONS_VALUE_ENCRYPT_FAILED, "Value encryption failure"};
 
-    return {oxenmq::to_hex(value.to_view())};
+    return {worktipsmq::to_hex(value.to_view())};
   }
 
   std::unique_ptr<tools::wallet2> wallet_rpc_server::load_wallet()
@@ -3606,12 +3606,12 @@ int main(int argc, char **argv)
 
   auto [vm, should_terminate] = wallet_args::main(
     argc, argv,
-    "oxen-wallet-rpc [--wallet-file=<file>|--generate-from-json=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
-    tools::wallet_rpc_server::tr("This is the RPC oxen wallet. It needs to connect to a oxen\ndaemon to work correctly."),
+    "worktips-wallet-rpc [--wallet-file=<file>|--generate-from-json=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
+    tools::wallet_rpc_server::tr("This is the RPC worktips wallet. It needs to connect to a worktips\ndaemon to work correctly."),
     desc_params, hidden_params,
     po::positional_options_description(),
     [](const std::string &s, bool emphasis){ epee::set_console_color(emphasis ? epee::console_color_white : epee::console_color_default, emphasis); std::cout << s << std::endl; if (emphasis) epee::reset_console_color(); },
-    "oxen-wallet-rpc.log",
+    "worktips-wallet-rpc.log",
     true
   );
   if (!vm)

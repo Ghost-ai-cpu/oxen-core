@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -37,7 +37,7 @@
 #include <unordered_set>
 #include <sstream>
 #include <iomanip>
-#include <oxenmq/base32z.h>
+#include <worktipsmq/base32z.h>
 
 extern "C" {
 #include <sodium.h>
@@ -73,10 +73,10 @@ extern "C" {
 #include "common/i18n.h"
 #include "epee/net/local_ip.h"
 
-#include "common/oxen_integration_test_hooks.h"
+#include "common/worktips_integration_test_hooks.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "cn"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "cn"
 
 DISABLE_VS_WARNINGS(4355)
 
@@ -187,7 +187,7 @@ namespace cryptonote
   };
   static const command_line::arg_descriptor<std::string> arg_public_ip = {
     "service-node-public-ip"
-  , "Public IP address on which this service node's services (such as the Loki "
+  , "Public IP address on which this service node's services (such as the Worktips "
     "storage server) are accessible. This IP address will be advertised to the "
     "network via the service node uptime proofs. Required if operating as a "
     "service node."
@@ -233,8 +233,8 @@ namespace cryptonote
   static const command_line::arg_descriptor<std::string> arg_block_rate_notify = {
     "block-rate-notify"
   , "Run a program when the block rate undergoes large fluctuations. This might "
-    "be a sign of large amounts of hash rate going on and off the Loki network, "
-    "or could be a sign that oxend is not properly synchronizing with the network. %t will be replaced "
+    "be a sign of large amounts of hash rate going on and off the Worktips network, "
+    "or could be a sign that worktipsd is not properly synchronizing with the network. %t will be replaced "
     "by the number of minutes for the observation window, %b by the number of "
     "blocks observed within that window, and %e by the number of blocks that was "
     "expected in that window."
@@ -282,10 +282,10 @@ namespace cryptonote
   , m_last_json_checkpoints_update(0)
   , m_nettype(UNDEFINED)
   , m_last_storage_server_ping(0)
-  , m_last_lokinet_ping(0)
+  , m_last_worktipsnet_ping(0)
   , m_pad_transactions(false)
   , ss_version{0}
-  , lokinet_version{0}
+  , worktipsnet_version{0}
   {
     m_checkpoints_updating.clear();
   }
@@ -351,7 +351,7 @@ namespace cryptonote
 
     command_line::add_arg(desc, arg_pad_transactions);
     command_line::add_arg(desc, arg_block_notify);
-#if 0 // TODO(oxen): Pruning not supported because of Service Node List
+#if 0 // TODO(worktips): Pruning not supported because of Service Node List
     command_line::add_arg(desc, arg_prune_blockchain);
 #endif
     command_line::add_arg(desc, arg_reorg_notify);
@@ -359,7 +359,7 @@ namespace cryptonote
     command_line::add_arg(desc, arg_keep_alt_blocks);
 
     command_line::add_arg(desc, arg_store_quorum_history);
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     command_line::add_arg(desc, integration_test::arg_hardforks_override);
     command_line::add_arg(desc, integration_test::arg_pipe_name);
 #endif
@@ -413,7 +413,7 @@ namespace cryptonote
 
         if (!epee::net_utils::is_ip_public(m_sn_public_ip)) {
           if (m_service_node_list.debug_allow_local_ips) {
-            MWARNING("Address given for public-ip is not public; allowing it because dev-allow-local-ips was specified. This service node WILL NOT WORK ON THE PUBLIC OXEN NETWORK!");
+            MWARNING("Address given for public-ip is not public; allowing it because dev-allow-local-ips was specified. This service node WILL NOT WORK ON THE PUBLIC WORKTIPS NETWORK!");
           } else {
             MERROR("Address given for public-ip is not public: " << epee::string_tools::get_ip_string_from_int32(m_sn_public_ip));
             args_okay = false;
@@ -428,7 +428,7 @@ namespace cryptonote
 
       if (!args_okay) {
         MERROR("IMPORTANT: One or more required service node-related configuration settings/options were omitted or invalid; "
-                << "please fix them and restart oxend.");
+                << "please fix them and restart worktipsd.");
         return false;
       }
     }
@@ -519,12 +519,12 @@ namespace cryptonote
   }
 
   // Returns a string for systemd status notifications such as:
-  // Height: 1234567, SN: active, proof: 55m12s, storage: 4m48s, lokinet: 47s
+  // Height: 1234567, SN: active, proof: 55m12s, storage: 4m48s, worktipsnet: 47s
   std::string core::get_status_string() const
   {
     std::string s;
     s.reserve(128);
-    s += 'v'; s += OXEN_VERSION_STR;
+    s += 'v'; s += WORKTIPS_VERSION_STR;
     s += "; Height: ";
     s += std::to_string(get_blockchain_storage().get_current_blockchain_height());
     s += ", SN: ";
@@ -554,8 +554,8 @@ namespace cryptonote
         s += time_ago_str(now, last_proof);
         s += ", storage: ";
         s += time_ago_str(now, m_last_storage_server_ping);
-        s += ", lokinet: ";
-        s += time_ago_str(now, m_last_lokinet_ping);
+        s += ", worktipsnet: ";
+        s += time_ago_str(now, m_last_worktipsnet_ping);
       }
     }
     return s;
@@ -566,7 +566,7 @@ namespace cryptonote
   {
     start_time = std::time(nullptr);
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     const std::string arg_hardforks_override = command_line::get_arg(vm, integration_test::arg_hardforks_override);
 
     std::vector<std::pair<uint8_t, uint64_t>> integration_test_hardforks;
@@ -659,7 +659,7 @@ namespace cryptonote
     bool sync_on_blocks = true;
     uint64_t sync_threshold = 1;
 
-#if !defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
+#if !defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS) // In integration mode, don't delete the DB. This should be explicitly done in the tests. Otherwise the more likely behaviour is persisting the DB across multiple daemons in the same test.
     if (m_nettype == FAKECHAIN && !keep_fakechain)
     {
       // reset the db by removing the database file before opening it
@@ -820,10 +820,10 @@ namespace cryptonote
     // Checkpoints
     m_checkpoints_path = m_config_folder / fs::u8path(JSON_HASH_FILE_NAME);
 
-    sqlite3 *ons_db = ons::init_oxen_name_system(ons_db_file_path, db->is_read_only());
+    sqlite3 *ons_db = ons::init_worktips_name_system(ons_db_file_path, db->is_read_only());
     if (!ons_db) return false;
 
-    init_oxenmq(vm);
+    init_worktipsmq(vm);
 
     const difficulty_type fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
     r = m_blockchain_storage.init(db.release(), ons_db, m_nettype, m_offline, regtest ? &regtest_test_options : test_options, fixed_difficulty, get_checkpoints);
@@ -924,7 +924,7 @@ namespace cryptonote
     // <data>/key_ed25519: Standard ed25519 secret key.  We always have this, and generate one if it
     // doesn't exist.
     //
-    // As of Loki 8.x, if this exists and `key` doesn't, we use this key for everything.  For
+    // As of Worktips 8.x, if this exists and `key` doesn't, we use this key for everything.  For
     // compatibility with earlier versions we also allow `key` to contain a separate monero privkey
     // for the SN keypair.  (The main difference is that the Monero keypair is unclamped and that it
     // only contains the private key value but not the secret key value that we need for full
@@ -979,7 +979,7 @@ namespace cryptonote
       MGINFO_YELLOW("- primary: " << tools::type_to_hex(keys.pub));
       MGINFO_YELLOW("- ed25519: " << tools::type_to_hex(keys.pub_ed25519));
       // .snode address is the ed25519 pubkey, encoded with base32z and with .snode appended:
-      MGINFO_YELLOW("- lokinet: " << oxenmq::to_base32z(tools::view_guts(keys.pub_ed25519)) << ".snode");
+      MGINFO_YELLOW("- worktipsnet: " << worktipsmq::to_base32z(tools::view_guts(keys.pub_ed25519)) << ".snode");
       MGINFO_YELLOW("-  x25519: " << tools::type_to_hex(keys.pub_x25519));
     } else {
       // Only print the x25519 version because it's the only thing useful for a non-SN (for
@@ -990,8 +990,8 @@ namespace cryptonote
     return true;
   }
 
-  static constexpr el::Level easylogging_level(oxenmq::LogLevel level) {
-    using namespace oxenmq;
+  static constexpr el::Level easylogging_level(worktipsmq::LogLevel level) {
+    using namespace worktipsmq;
     switch (level) {
         case LogLevel::fatal: return el::Level::Fatal;
         case LogLevel::error: return el::Level::Error;
@@ -1003,11 +1003,11 @@ namespace cryptonote
     }
   }
 
-  oxenmq::AuthLevel core::omq_check_access(const crypto::x25519_public_key& pubkey) const {
+  worktipsmq::AuthLevel core::omq_check_access(const crypto::x25519_public_key& pubkey) const {
     auto it = m_omq_auth.find(pubkey);
     if (it != m_omq_auth.end())
       return it->second;
-    return oxenmq::AuthLevel::denied;
+    return worktipsmq::AuthLevel::denied;
   }
 
   // Builds an allow function; takes `*this`, the default auth level, and whether this connection
@@ -1021,8 +1021,8 @@ namespace cryptonote
   // check_sn is whether we check an incoming key against known service nodes (and thus return
   // "true" for the service node access if it checks out).
   //
-  oxenmq::AuthLevel core::omq_allow(std::string_view ip, std::string_view x25519_pubkey_str, oxenmq::AuthLevel default_auth) {
-    using namespace oxenmq;
+  worktipsmq::AuthLevel core::omq_allow(std::string_view ip, std::string_view x25519_pubkey_str, worktipsmq::AuthLevel default_auth) {
+    using namespace worktipsmq;
     AuthLevel auth = default_auth;
     if (x25519_pubkey_str.size() == sizeof(crypto::x25519_public_key)) {
       crypto::x25519_public_key x25519_pubkey;
@@ -1042,10 +1042,10 @@ namespace cryptonote
     return auth;
   }
 
-  void core::init_oxenmq(const boost::program_options::variables_map& vm) {
-    using namespace oxenmq;
-    MGINFO("Starting oxenmq");
-    m_omq = std::make_unique<OxenMQ>(
+  void core::init_worktipsmq(const boost::program_options::variables_map& vm) {
+    using namespace worktipsmq;
+    MGINFO("Starting worktipsmq");
+    m_omq = std::make_unique<WorktipsMQ>(
         tools::copy_guts(m_service_keys.pub_x25519),
         tools::copy_guts(m_service_keys.key_x25519),
         m_service_node,
@@ -1055,7 +1055,7 @@ namespace cryptonote
           if (ELPP->vRegistry()->allowed(easylogging_level(level), "omq"))
             el::base::Writer(easylogging_level(level), file, line, ELPP_FUNC, el::base::DispatchAction::NormalLog).construct("omq") << msg;
         },
-        oxenmq::LogLevel::trace
+        worktipsmq::LogLevel::trace
     );
 
     // ping.ping: a simple debugging target for pinging the omq listener
@@ -1085,7 +1085,7 @@ namespace cryptonote
     quorumnet_init(*this, m_quorumnet_state);
   }
 
-  void core::start_oxenmq() {
+  void core::start_worktipsmq() {
       update_omq_sns(); // Ensure we have SNs set for the current block before starting
 
       if (m_service_node)
@@ -1746,7 +1746,7 @@ namespace cryptonote
     if (count == 0)
       return result;
 
-    auto& [emission_amount, total_fee_amount, burnt_oxen] = result;
+    auto& [emission_amount, total_fee_amount, burnt_worktips] = result;
 
     // Caching.
     //
@@ -1771,7 +1771,7 @@ namespace cryptonote
         if (m_coinbase_cache.height && count >= m_coinbase_cache.height) {
           emission_amount = m_coinbase_cache.emissions;
           total_fee_amount = m_coinbase_cache.fees;
-          burnt_oxen = m_coinbase_cache.burnt;
+          burnt_worktips = m_coinbase_cache.burnt;
           start_offset = m_coinbase_cache.height + 1;
           count -= m_coinbase_cache.height;
         }
@@ -1801,7 +1801,7 @@ namespace cryptonote
             // The cache is updated and we can still use it, so update our variables.
             emission_amount = m_coinbase_cache.emissions;
             total_fee_amount = m_coinbase_cache.fees;
-            burnt_oxen = m_coinbase_cache.burnt;
+            burnt_worktips = m_coinbase_cache.burnt;
             count -= m_coinbase_cache.height - start_offset + 1;
             start_offset = m_coinbase_cache.height + 1;
           }
@@ -1817,7 +1817,7 @@ namespace cryptonote
     const uint64_t end = start_offset + count - 1;
     m_blockchain_storage.for_blocks_range(start_offset, end,
       [this, &cache_to, &result, &cache_build_started](uint64_t height, const crypto::hash& hash, const block& b){
-      auto& [emission_amount, total_fee_amount, burnt_oxen] = result;
+      auto& [emission_amount, total_fee_amount, burnt_worktips] = result;
       std::vector<transaction> txs;
       std::vector<crypto::hash> missed_txs;
       uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
@@ -1828,7 +1828,7 @@ namespace cryptonote
         tx_fee_amount += get_tx_miner_fee(tx, b.major_version >= HF_VERSION_FEE_BURNING);
         if(b.major_version >= HF_VERSION_FEE_BURNING)
         {
-          burnt_oxen += get_burned_amount_from_tx_extra(tx.extra);
+          burnt_worktips += get_burned_amount_from_tx_extra(tx.extra);
         }
       }
 
@@ -1842,7 +1842,7 @@ namespace cryptonote
           m_coinbase_cache.height = height;
           m_coinbase_cache.emissions = emission_amount;
           m_coinbase_cache.fees = total_fee_amount;
-          m_coinbase_cache.burnt = burnt_oxen;
+          m_coinbase_cache.burnt = burnt_worktips;
         }
         if (m_coinbase_cache.building)
         {
@@ -1931,7 +1931,7 @@ namespace cryptonote
     bool relayed;
     auto height = get_current_blockchain_height();
 
-    auto proof = m_service_node_list.generate_uptime_proof(m_sn_public_ip, storage_https_port(), storage_omq_port(), ss_version, m_quorumnet_port, lokinet_version);
+    auto proof = m_service_node_list.generate_uptime_proof(m_sn_public_ip, storage_https_port(), storage_omq_port(), ss_version, m_quorumnet_port, worktipsnet_version);
     NOTIFY_BTENCODED_UPTIME_PROOF::request req = proof.generate_request();
     relayed = get_protocol()->relay_btencoded_uptime_proof(req, fake_context);
 
@@ -1955,7 +1955,7 @@ namespace cryptonote
     bool result = m_service_node_list.handle_uptime_proof(proof, my_uptime_proof_confirmation, pkey);
     if (result && m_service_node_list.is_service_node(proof.pubkey, true /*require_active*/) && pkey)
     {
-      oxenmq::pubkey_set added;
+      worktipsmq::pubkey_set added;
       added.insert(tools::copy_guts(pkey));
       m_omq->update_active_sns(added, {} /*removed*/);
     }
@@ -1972,7 +1972,7 @@ namespace cryptonote
     bool result = m_service_node_list.handle_btencoded_uptime_proof(std::move(proof), my_uptime_proof_confirmation, pkey);
     if (result && m_service_node_list.is_service_node(pubkey, true /*require_active*/) && pkey)
     {
-      oxenmq::pubkey_set added;
+      worktipsmq::pubkey_set added;
       added.insert(tools::copy_guts(pkey));
       m_omq->update_active_sns(added, {} /*removed*/);
     }
@@ -2093,7 +2093,7 @@ namespace cryptonote
     std::vector<block_complete_entry> blocks;
     m_miner.pause();
     {
-      OXEN_DEFER { m_miner.resume(); };
+      WORKTIPS_DEFER { m_miner.resume(); };
       try
       {
         blocks.push_back(get_block_complete_entry(b, m_mempool));
@@ -2239,8 +2239,8 @@ namespace cryptonote
 
   void core::update_omq_sns()
   {
-    // TODO: let callers (e.g. lokinet, ss) subscribe to callbacks when this fires
-    oxenmq::pubkey_set active_sns;
+    // TODO: let callers (e.g. worktipsnet, ss) subscribe to callbacks when this fires
+    worktipsmq::pubkey_set active_sns;
     m_service_node_list.copy_active_x25519_pubkeys(std::inserter(active_sns, active_sns.end()));
     m_omq->set_active_sns(std::move(active_sns));
   }
@@ -2346,14 +2346,14 @@ namespace cryptonote
           {
             MGINFO_RED(
                 "Failed to submit uptime proof: have not heard from the storage server recently. Make sure that it "
-                "is running! It is required to run alongside the Loki daemon");
+                "is running! It is required to run alongside the Worktips daemon");
             return;
           }
-          if (!check_external_ping(m_last_lokinet_ping, get_net_config().UPTIME_PROOF_FREQUENCY, "Lokinet"))
+          if (!check_external_ping(m_last_worktipsnet_ping, get_net_config().UPTIME_PROOF_FREQUENCY, "Worktipsnet"))
           {
             MGINFO_RED(
-                "Failed to submit uptime proof: have not heard from lokinet recently. Make sure that it "
-                "is running! It is required to run alongside the Loki daemon");
+                "Failed to submit uptime proof: have not heard from worktipsnet recently. Make sure that it "
+                "is running! It is required to run alongside the Worktips daemon");
             return;
           }
         }
@@ -2374,7 +2374,7 @@ namespace cryptonote
     {
       std::string main_message;
       if (m_offline)
-        main_message = "The daemon is running offline and will not attempt to sync to the Loki network.";
+        main_message = "The daemon is running offline and will not attempt to sync to the Worktips network.";
       else
         main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
       MGINFO_YELLOW("\n**********************************************************************\n"
@@ -2405,7 +2405,7 @@ namespace cryptonote
     m_miner.on_idle();
     m_mempool.on_idle();
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     integration_test::state.core_is_idle = true;
 #endif
 
@@ -2467,7 +2467,7 @@ namespace cryptonote
       return true;
     }
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     MDEBUG("Not checking block rate, integration test mode");
     return true;
 #endif
@@ -2488,7 +2488,7 @@ namespace cryptonote
       MDEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
       if (p < threshold)
       {
-        MWARNING("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Loki network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
+        MWARNING("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Worktips network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
 
         std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
         if (block_rate_notify)

@@ -36,7 +36,7 @@
  */
 #pragma once
 
-#include <oxenmq/variant.h>
+#include <worktipsmq/variant.h>
 #include "serialization.h"
 #include "common/meta.h"
 

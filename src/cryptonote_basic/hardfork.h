@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021, The Oxen Project
+// Copyright (c) 2018-2021, The Worktips Project
 // 
 // All rights reserved.
 // 

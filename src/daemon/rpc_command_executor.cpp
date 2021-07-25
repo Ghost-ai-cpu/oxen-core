@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
@@ -41,9 +41,9 @@
 #include "cryptonote_basic/hardfork.h"
 #include "checkpoints/checkpoints.h"
 #include <boost/format.hpp>
-#include <oxenmq/base32z.h>
+#include <worktipsmq/base32z.h>
 
-#include "common/oxen_integration_test_hooks.h"
+#include "common/worktips_integration_test_hooks.h"
 
 #include <fstream>
 #include <ctime>
@@ -51,8 +51,8 @@
 #include <numeric>
 #include <stack>
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon"
 
 using namespace cryptonote::rpc;
 
@@ -65,7 +65,7 @@ namespace {
   {
     std::cout << prompt << std::flush;
     std::string result;
-#if defined (OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined (WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     integration_test::write_buffered_stdout();
     result = integration_test::read_from_pipe();
 #else
@@ -566,11 +566,11 @@ bool rpc_command_executor::show_status() {
         str << "NOT RECEIVED";
     str << " (storage), ";
 
-    if (*ires.last_lokinet_ping > 0)
-        str << get_human_time_ago(*ires.last_lokinet_ping, now, true /*abbreviate*/);
+    if (*ires.last_worktipsnet_ping > 0)
+        str << get_human_time_ago(*ires.last_worktipsnet_ping, now, true /*abbreviate*/);
     else
         str << "NOT RECEIVED";
-    str << " (lokinet)";
+    str << " (worktipsnet)";
 
     tools::success_msg_writer() << str.str();
 
@@ -625,7 +625,7 @@ bool rpc_command_executor::mining_status() {
   if (!mining_busy && mres.active && mres.speed > 0 && mres.block_target > 0 && mres.difficulty > 0)
   {
     uint64_t daily = 86400 / (double)mres.difficulty * mres.speed * mres.block_reward;
-    tools::msg_writer() << "Expected: " << cryptonote::print_money(daily) << " OXEN daily, " << cryptonote::print_money(7*daily) << " weekly";
+    tools::msg_writer() << "Expected: " << cryptonote::print_money(daily) << " WORKTIPS daily, " << cryptonote::print_money(7*daily) << " weekly";
   }
 
   return true;
@@ -872,11 +872,11 @@ bool rpc_command_executor::print_transaction(const crypto::hash& transaction_has
     std::optional<cryptonote::transaction> t;
     if (include_metadata || include_json)
     {
-      if (oxenmq::is_hex(pruned_as_hex) && (!tx.prunable_as_hex || oxenmq::is_hex(*tx.prunable_as_hex)))
+      if (worktipsmq::is_hex(pruned_as_hex) && (!tx.prunable_as_hex || worktipsmq::is_hex(*tx.prunable_as_hex)))
       {
-        std::string blob = oxenmq::from_hex(pruned_as_hex);
+        std::string blob = worktipsmq::from_hex(pruned_as_hex);
         if (tx.prunable_as_hex)
-          blob += oxenmq::from_hex(*tx.prunable_as_hex);
+          blob += worktipsmq::from_hex(*tx.prunable_as_hex);
 
         bool parsed = pruned
           ? cryptonote::parse_and_validate_tx_base_from_blob(blob, t.emplace())
@@ -945,7 +945,7 @@ static void print_pool(const std::vector<cryptonote::rpc::tx_info> &transactions
     w << "blob_size: " << tx_info.blob_size << "\n"
       << "weight: " << tx_info.weight << "\n"
       << "fee: " << cryptonote::print_money(tx_info.fee) << "\n"
-      /// NB(Oxen): in v13 we have min_fee = per_out*outs + per_byte*bytes, only the total fee/byte matters for
+      /// NB(Worktips): in v13 we have min_fee = per_out*outs + per_byte*bytes, only the total fee/byte matters for
       /// the purpose of building a block template from the pool, so we still print the overall fee / byte here.
       /// (we can't back out the individual per_out and per_byte that got used anyway).
       << "fee/byte: " << cryptonote::print_money(tx_info.fee / (double)tx_info.weight) << "\n"
@@ -1133,8 +1133,8 @@ bool rpc_command_executor::print_status()
 
   // Make a request to get_height because it is public and relatively simple
   GET_HEIGHT::response res;
-  if (invoke<GET_HEIGHT>({}, res, "oxend is NOT running")) {
-    tools::success_msg_writer() << "oxend is running (height: " << res.height << ")";
+  if (invoke<GET_HEIGHT>({}, res, "worktipsd is NOT running")) {
+    tools::success_msg_writer() << "worktipsd is running (height: " << res.height << ")";
     return true;
   }
   return false;
@@ -1230,7 +1230,7 @@ bool rpc_command_executor::ban(const std::string &address, time_t seconds, bool 
     // TODO(doyle): Work around because integration tests break when using
     // mlog_set_categories(""), so emit the block message using msg writer
     // instead of the logging system.
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     tools::success_msg_writer() << "Host " << address << (clear_ban ? " unblocked." : " blocked.");
 #endif
 
@@ -1663,7 +1663,7 @@ static void append_printable_service_node_list_entry(cryptonote::network_type ne
     if (detailed_view)
       stream << indent2 << "Auxiliary Public Keys:\n"
              << indent3 << (entry.pubkey_ed25519.empty() ? "(not yet received)" : entry.pubkey_ed25519) << " (Ed25519)\n"
-             << indent3 << (entry.pubkey_ed25519.empty() ? "(not yet received)" : oxenmq::to_base32z(oxenmq::from_hex(entry.pubkey_ed25519)) + ".snode") << " (Lokinet)\n"
+             << indent3 << (entry.pubkey_ed25519.empty() ? "(not yet received)" : worktipsmq::to_base32z(worktipsmq::from_hex(entry.pubkey_ed25519)) + ".snode") << " (Worktipsnet)\n"
              << indent3 << (entry.pubkey_x25519.empty()  ? "(not yet received)" : entry.pubkey_x25519)  << " (X25519)\n";
 
     //
@@ -1693,14 +1693,14 @@ static void append_printable_service_node_list_entry(cryptonote::network_type ne
     };
     stream << indent2 << "Storage Server Reachable: ";
     print_reachable(entry.storage_server_reachable, entry.storage_server_first_unreachable, entry.storage_server_last_unreachable, entry.storage_server_last_reachable);
-    stream << indent2 << "Lokinet Reachable: ";
-    print_reachable(entry.lokinet_reachable, entry.lokinet_first_unreachable, entry.lokinet_last_unreachable, entry.lokinet_last_reachable);
+    stream << indent2 << "Worktipsnet Reachable: ";
+    print_reachable(entry.worktipsnet_reachable, entry.worktipsnet_first_unreachable, entry.worktipsnet_last_unreachable, entry.worktipsnet_last_reachable);
 
     //
     // NOTE: Component Versions
     //
-    stream << indent2 << "Storage Server / Lokinet Router versions: "
-        << ((entry.storage_server_version[0] == 0 && entry.storage_server_version[1] == 0 && entry.storage_server_version[2] == 0) ? "(Storage server ping not yet received) " : tools::join(".", entry.storage_server_version)) << " / " << ((entry.lokinet_version[0] == 0 && entry.lokinet_version[1] == 0 && entry.lokinet_version[2] == 0) ? "(Lokinet ping not yet received)" : tools::join(".", entry.lokinet_version)) << "\n";
+    stream << indent2 << "Storage Server / Worktipsnet Router versions: "
+        << ((entry.storage_server_version[0] == 0 && entry.storage_server_version[1] == 0 && entry.storage_server_version[2] == 0) ? "(Storage server ping not yet received) " : tools::join(".", entry.storage_server_version)) << " / " << ((entry.worktipsnet_version[0] == 0 && entry.worktipsnet_version[1] == 0 && entry.worktipsnet_version[2] == 0) ? "(Worktipsnet ping not yet received)" : tools::join(".", entry.worktipsnet_version)) << "\n";
 
 
 
@@ -1979,11 +1979,11 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
     tools::fail_msg_writer() << "Unable to prepare registration: this daemon is not running in --service-node mode";
     return false;
   }
-  else if (auto last_lokinet_ping = static_cast<std::time_t>(res.last_lokinet_ping.value_or(0));
-      last_lokinet_ping < (time(nullptr) - 60) && !force_registration)
+  else if (auto last_worktipsnet_ping = static_cast<std::time_t>(res.last_worktipsnet_ping.value_or(0));
+      last_worktipsnet_ping < (time(nullptr) - 60) && !force_registration)
   {
-    tools::fail_msg_writer() << "Unable to prepare registration: this daemon has not received a ping from lokinet "
-                             << (res.last_lokinet_ping == 0 ? "yet" : "since " + get_human_time_ago(last_lokinet_ping, std::time(nullptr)));
+    tools::fail_msg_writer() << "Unable to prepare registration: this daemon has not received a ping from worktipsnet "
+                             << (res.last_worktipsnet_ping == 0 ? "yet" : "since " + get_human_time_ago(last_worktipsnet_ping, std::time(nullptr)));
     return false;
   }
   else if (auto last_storage_server_ping = static_cast<std::time_t>(res.last_storage_server_ping.value_or(0));
@@ -1996,7 +1996,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
 
   uint64_t block_height = std::max(res.height, res.target_height);
   uint8_t hf_version = hf_res.version;
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
   cryptonote::network_type const nettype = cryptonote::FAKECHAIN;
 #else
   cryptonote::network_type const nettype =
@@ -2121,7 +2121,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
       case register_step::is_solo_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        last_input_result = input_line_back_cancel_get_input("Enter the oxen address for the solo staker", address_str);
+        last_input_result = input_line_back_cancel_get_input("Enter the worktips address for the solo staker", address_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2226,7 +2226,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
       case register_step::is_open_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        last_input_result = input_line_back_cancel_get_input("Enter the oxen address for the operator", address_str);
+        last_input_result = input_line_back_cancel_get_input("Enter the worktips address for the operator", address_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2250,7 +2250,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
         std::cout << "Minimum amount that can be reserved: " << cryptonote::print_money(min_contribution) << " " << cryptonote::get_unit() << std::endl;
 
         std::string contribution_str;
-        last_input_result = input_line_back_cancel_get_input("How much oxen does the operator want to reserve in the stake?", contribution_str);
+        last_input_result = input_line_back_cancel_get_input("How much worktips does the operator want to reserve in the stake?", contribution_str);
         if (last_input_result == input_line_result::back)
           continue;
 
@@ -2301,7 +2301,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
 
       case register_step::is_open_stake__contributor_address_to_reserve:
       {
-        std::string const prompt = "Enter the oxen address for contributor " + std::to_string(state.contributions.size() + 1);
+        std::string const prompt = "Enter the worktips address for contributor " + std::to_string(state.contributions.size() + 1);
         std::string address_str;
         last_input_result = input_line_back_cancel_get_input(prompt.c_str(), address_str);
         if (last_input_result == input_line_result::back)
@@ -2331,7 +2331,7 @@ bool rpc_command_executor::prepare_registration(bool force_registration)
         std::cout << "There is " << cryptonote::print_money(amount_left) << " " << cryptonote::get_unit() << " left to meet the staking requirement." << std::endl;
 
         std::string contribution_str;
-        std::string const prompt = "How much oxen does contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
+        std::string const prompt = "How much worktips does contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
         last_input_result        = input_line_back_cancel_get_input(prompt.c_str(), contribution_str);
         if (last_input_result == input_line_result::back)
           continue;
@@ -2506,7 +2506,7 @@ bool rpc_command_executor::prune_blockchain()
 
     tools::success_msg_writer() << "Blockchain pruned";
 #else
-    tools::fail_msg_writer() << "Blockchain pruning is not supported in Oxen yet";
+    tools::fail_msg_writer() << "Blockchain pruning is not supported in Worktips yet";
 #endif
     return true;
 }

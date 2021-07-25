@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
@@ -38,17 +38,17 @@
 #include <iterator>
 #include <type_traits>
 #include <variant>
-#include <oxenmq/base64.h>
+#include <worktipsmq/base64.h>
 #include "crypto/crypto.h"
 #include "cryptonote_basic/hardfork.h"
 #include "cryptonote_basic/tx_extra.h"
-#include "cryptonote_core/oxen_name_system.h"
+#include "cryptonote_core/worktips_name_system.h"
 #include "cryptonote_core/pulse.h"
-#include "oxen_economy.h"
+#include "worktips_economy.h"
 #include "epee/string_tools.h"
 #include "core_rpc_server.h"
 #include "common/command_line.h"
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include "common/sha256sum.h"
 #include "common/perf_timer.h"
 #include "common/random.h"
@@ -66,8 +66,8 @@
 #include "p2p/net_node.h"
 #include "version.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon.rpc"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
 
 namespace cryptonote { namespace rpc {
@@ -423,14 +423,14 @@ namespace cryptonote { namespace rpc {
     res.ons_counts = {
       ons_counts[ons::mapping_type::session],
       ons_counts[ons::mapping_type::wallet],
-      ons_counts[ons::mapping_type::lokinet]};
+      ons_counts[ons::mapping_type::worktipsnet]};
 
     if (context.admin)
     {
       res.service_node = m_core.service_node();
       res.start_time = (uint64_t)m_core.get_start_time();
       res.last_storage_server_ping = (uint64_t)m_core.m_last_storage_server_ping;
-      res.last_lokinet_ping = (uint64_t)m_core.m_last_lokinet_ping;
+      res.last_worktipsnet_ping = (uint64_t)m_core.m_last_worktipsnet_ping;
       res.free_space = m_core.get_free_space();
       res.height_without_bootstrap = res.height;
       std::shared_lock lock{m_bootstrap_daemon_mutex};
@@ -445,9 +445,9 @@ namespace cryptonote { namespace rpc {
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
     if (!context.admin)
       res.database_size = round_up(res.database_size, 1'000'000'000);
-    res.version = context.admin ? OXEN_VERSION_FULL : std::to_string(OXEN_VERSION[0]);
+    res.version = context.admin ? WORKTIPS_VERSION_FULL : std::to_string(WORKTIPS_VERSION[0]);
     res.status_line = context.admin ? m_core.get_status_string() :
-      "v" + std::to_string(OXEN_VERSION[0]) + "; Height: " + std::to_string(res.height);
+      "v" + std::to_string(WORKTIPS_VERSION[0]) + "; Height: " + std::to_string(res.height);
 
     res.status = STATUS_OK;
     return res;
@@ -721,9 +721,9 @@ namespace cryptonote { namespace rpc {
       void operator()(const tx_extra_nonce& x) {
         if ((x.nonce.size() == sizeof(crypto::hash) + 1 && x.nonce[0] == TX_EXTRA_NONCE_PAYMENT_ID)
             || (x.nonce.size() == sizeof(crypto::hash8) + 1 && x.nonce[0] == TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID))
-          entry.payment_id = oxenmq::to_hex(x.nonce.begin() + 1, x.nonce.end());
+          entry.payment_id = worktipsmq::to_hex(x.nonce.begin() + 1, x.nonce.end());
         else
-          entry.extra_nonce = oxenmq::to_hex(x.nonce);
+          entry.extra_nonce = worktipsmq::to_hex(x.nonce);
       }
       void operator()(const tx_extra_merge_mining_tag& x) { entry.mm_depth = x.depth; entry.mm_root = tools::type_to_hex(x.merkle_root); }
       void operator()(const tx_extra_additional_pub_keys& x) { entry.additional_pubkeys = hexify(x.data); }
@@ -789,15 +789,15 @@ namespace cryptonote { namespace rpc {
         else if (owner.type == ons::generic_owner_sig_type::ed25519)
           entry = tools::type_to_hex(owner.ed25519);
       }
-      void operator()(const tx_extra_oxen_name_system& x) {
+      void operator()(const tx_extra_worktips_name_system& x) {
         auto& ons = entry.ons.emplace();
         ons.blocks = ons::expiry_blocks(nettype, x.type);
         switch (x.type)
         {
-          case ons::mapping_type::lokinet: [[fallthrough]];
-          case ons::mapping_type::lokinet_2years: [[fallthrough]];
-          case ons::mapping_type::lokinet_5years: [[fallthrough]];
-          case ons::mapping_type::lokinet_10years: ons.type = "lokinet"; break;
+          case ons::mapping_type::worktipsnet: [[fallthrough]];
+          case ons::mapping_type::worktipsnet_2years: [[fallthrough]];
+          case ons::mapping_type::worktipsnet_5years: [[fallthrough]];
+          case ons::mapping_type::worktipsnet_10years: ons.type = "worktipsnet"; break;
 
           case ons::mapping_type::session: ons.type = "session"; break;
           case ons::mapping_type::wallet:  ons.type = "wallet"; break;
@@ -814,7 +814,7 @@ namespace cryptonote { namespace rpc {
           ons.renew = true;
         ons.name_hash = tools::type_to_hex(x.name_hash);
         if (!x.encrypted_value.empty())
-          ons.value = oxenmq::to_hex(x.encrypted_value);
+          ons.value = worktipsmq::to_hex(x.encrypted_value);
         _load_owner(ons.owner, x.owner);
         _load_owner(ons.backup_owner, x.backup_owner);
       }
@@ -962,9 +962,9 @@ namespace cryptonote { namespace rpc {
         }
         else
         {
-          e.pruned_as_hex = oxenmq::to_hex(unprunable_data);
+          e.pruned_as_hex = worktipsmq::to_hex(unprunable_data);
           if (!req.prune && prunable && !pruned)
-            e.prunable_as_hex = oxenmq::to_hex(prunable_data);
+            e.prunable_as_hex = worktipsmq::to_hex(prunable_data);
         }
       }
       else
@@ -973,7 +973,7 @@ namespace cryptonote { namespace rpc {
         tx_data = unprunable_data;
         tx_data += prunable_data;
         if (!req.decode_as_json)
-          e.as_hex = oxenmq::to_hex(tx_data);
+          e.as_hex = worktipsmq::to_hex(tx_data);
       }
 
       cryptonote::transaction t;
@@ -1316,7 +1316,7 @@ namespace cryptonote { namespace rpc {
     const uint8_t major_version = m_core.get_blockchain_storage().get_network_version();
 
     res.pow_algorithm =
-        major_version >= network_version_12_checkpointing    ? "RandomX (OXEN variant)"               :
+        major_version >= network_version_12_checkpointing    ? "RandomX (WORKTIPS variant)"               :
         major_version == network_version_11_infinite_staking ? "Cryptonight Turtle Light (Variant 2)" :
                                                                "Cryptonight Heavy (Variant 2)";
 
@@ -1482,7 +1482,7 @@ namespace cryptonote { namespace rpc {
 
     m_core.get_pool().get_transactions_and_spent_keys_info(res.transactions, res.spent_key_images, load_extra, context.admin);
     for (tx_info& txi : res.transactions)
-      txi.tx_blob = oxenmq::to_hex(txi.tx_blob);
+      txi.tx_blob = worktipsmq::to_hex(txi.tx_blob);
     res.status = STATUS_OK;
     return res;
   }
@@ -1557,7 +1557,7 @@ namespace cryptonote { namespace rpc {
   //------------------------------------------------------------------------------------------------------------------------------
 
   //
-  // Oxen
+  // Worktips
   //
   GET_OUTPUT_BLACKLIST::response core_rpc_server::invoke(GET_OUTPUT_BLACKLIST::request&& req, rpc_context context)
   {
@@ -1712,8 +1712,8 @@ namespace cryptonote { namespace rpc {
     }
     blobdata hashing_blob = get_block_hashing_blob(b);
     res.prev_hash = tools::type_to_hex(b.prev_id);
-    res.blocktemplate_blob = oxenmq::to_hex(block_blob);
-    res.blockhashing_blob =  oxenmq::to_hex(hashing_blob);
+    res.blocktemplate_blob = worktipsmq::to_hex(block_blob);
+    res.blockhashing_blob =  worktipsmq::to_hex(hashing_blob);
     res.status = STATUS_OK;
     return res;
   }
@@ -1795,7 +1795,7 @@ namespace cryptonote { namespace rpc {
         return true;
       }, b, template_res.difficulty, template_res.height);
 
-      submit_req.blob[0] = oxenmq::to_hex(block_to_blob(b));
+      submit_req.blob[0] = worktipsmq::to_hex(block_to_blob(b));
       auto submit_res = invoke(std::move(submit_req), context);
       res.status = submit_res.status;
 
@@ -2077,7 +2077,7 @@ namespace cryptonote { namespace rpc {
     res.tx_hashes.reserve(blk.tx_hashes.size());
     for (const auto& tx_hash : blk.tx_hashes)
         res.tx_hashes.push_back(tools::type_to_hex(tx_hash));
-    res.blob = oxenmq::to_hex(t_serializable_object_to_blob(blk));
+    res.blob = worktipsmq::to_hex(t_serializable_object_to_blob(blk));
     res.json = obj_to_json_str(blk);
     res.status = STATUS_OK;
     return res;
@@ -2348,7 +2348,7 @@ namespace cryptonote { namespace rpc {
       res.service_node_state.quorumnet_port       = m_core.quorumnet_port();
       res.service_node_state.pubkey_ed25519       = std::move(get_service_node_key_res.service_node_ed25519_pubkey);
       res.service_node_state.pubkey_x25519        = std::move(get_service_node_key_res.service_node_x25519_pubkey);
-      res.service_node_state.service_node_version = OXEN_VERSION;
+      res.service_node_state.service_node_version = WORKTIPS_VERSION;
     }
     else
     {
@@ -3074,7 +3074,7 @@ namespace cryptonote { namespace rpc {
     auto& netconf = m_core.get_net_config();
     m_core.get_service_node_list().access_proof(sn_info.pubkey, [&entry, &netconf](const auto &proof) {
         entry.service_node_version     = proof.proof->version;
-        entry.lokinet_version          = proof.proof->lokinet_version;
+        entry.worktipsnet_version          = proof.proof->worktipsnet_version;
         entry.storage_server_version   = proof.proof->storage_server_version;
         entry.public_ip                = epee::string_tools::get_ip_string_from_int32(proof.proof->public_ip);
         entry.storage_port             = proof.proof->storage_https_port;
@@ -3091,10 +3091,10 @@ namespace cryptonote { namespace rpc {
         entry.storage_server_first_unreachable = reachable_to_time_t(proof.ss_reachable.first_unreachable, system_now, steady_now);
         entry.storage_server_last_unreachable = reachable_to_time_t(proof.ss_reachable.last_unreachable, system_now, steady_now);
         entry.storage_server_last_reachable = reachable_to_time_t(proof.ss_reachable.last_reachable, system_now, steady_now);
-        entry.lokinet_reachable = !proof.lokinet_reachable.unreachable_for(netconf.UPTIME_PROOF_VALIDITY - netconf.UPTIME_PROOF_FREQUENCY, steady_now);
-        entry.lokinet_first_unreachable = reachable_to_time_t(proof.lokinet_reachable.first_unreachable, system_now, steady_now);
-        entry.lokinet_last_unreachable = reachable_to_time_t(proof.lokinet_reachable.last_unreachable, system_now, steady_now);
-        entry.lokinet_last_reachable = reachable_to_time_t(proof.lokinet_reachable.last_reachable, system_now, steady_now);
+        entry.worktipsnet_reachable = !proof.worktipsnet_reachable.unreachable_for(netconf.UPTIME_PROOF_VALIDITY - netconf.UPTIME_PROOF_FREQUENCY, steady_now);
+        entry.worktipsnet_first_unreachable = reachable_to_time_t(proof.worktipsnet_reachable.first_unreachable, system_now, steady_now);
+        entry.worktipsnet_last_unreachable = reachable_to_time_t(proof.worktipsnet_reachable.last_unreachable, system_now, steady_now);
+        entry.worktipsnet_last_reachable = reachable_to_time_t(proof.worktipsnet_reachable.last_reachable, system_now, steady_now);
 
         service_nodes::participation_history<service_nodes::participation_entry> const &checkpoint_participation = proof.checkpoint_participation;
         service_nodes::participation_history<service_nodes::participation_entry> const &pulse_participation      = proof.pulse_participation;
@@ -3276,12 +3276,12 @@ namespace cryptonote { namespace rpc {
       });
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  LOKINET_PING::response core_rpc_server::invoke(LOKINET_PING::request&& req, rpc_context context)
+  WORKTIPSNET_PING::response core_rpc_server::invoke(WORKTIPSNET_PING::request&& req, rpc_context context)
   {
-    m_core.lokinet_version = req.version;
-    return handle_ping<LOKINET_PING>(
-        req.version, service_nodes::MIN_LOKINET_VERSION,
-        "Lokinet", m_core.m_last_lokinet_ping, m_core.get_net_config().UPTIME_PROOF_FREQUENCY,
+    m_core.worktipsnet_version = req.version;
+    return handle_ping<WORKTIPSNET_PING>(
+        req.version, service_nodes::MIN_WORKTIPSNET_VERSION,
+        "Worktipsnet", m_core.m_last_worktipsnet_ping, m_core.get_net_config().UPTIME_PROOF_FREQUENCY,
         [this](bool significant) { if (significant) m_core.reset_proof_interval(); });
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -3451,8 +3451,8 @@ namespace cryptonote { namespace rpc {
     }
 
     bool success = false;
-    if (req.type == "lokinet")
-      success = m_core.get_service_node_list().set_lokinet_peer_reachable(pubkey, req.passed);
+    if (req.type == "worktipsnet")
+      success = m_core.get_service_node_list().set_worktipsnet_peer_reachable(pubkey, req.passed);
     else if (req.type == "storage" || req.type == "reachability" /* TODO: old name, can be removed once SS no longer uses it */)
       success = m_core.get_service_node_list().set_storage_server_peer_reachable(pubkey, req.passed);
     else
@@ -3510,7 +3510,7 @@ namespace cryptonote { namespace rpc {
       {
         types.push_back(static_cast<ons::mapping_type>(type));
         if (!ons::mapping_type_allowed(hf_version, types.back()))
-          throw rpc_error{ERROR_WRONG_PARAM, "Invalid lokinet type '" + std::to_string(type) + "'"};
+          throw rpc_error{ERROR_WRONG_PARAM, "Invalid worktipsnet type '" + std::to_string(type) + "'"};
       }
 
       // This also takes 32 raw bytes, but that is undocumented (because it is painful to pass
@@ -3528,7 +3528,7 @@ namespace cryptonote { namespace rpc {
         entry.name_hash                                        = record.name_hash;
         entry.owner                                            = record.owner.to_string(nettype());
         if (record.backup_owner) entry.backup_owner            = record.backup_owner.to_string(nettype());
-        entry.encrypted_value                                  = oxenmq::to_hex(record.encrypted_value.to_view());
+        entry.encrypted_value                                  = worktipsmq::to_hex(record.encrypted_value.to_view());
         entry.expiration_height                                = record.expiration_height;
         entry.update_height                                    = record.update_height;
         entry.txid                                             = tools::type_to_hex(record.txid);
@@ -3558,7 +3558,7 @@ namespace cryptonote { namespace rpc {
       if (!ons::parse_owner_to_generic_owner(m_core.get_nettype(), owner, ons_owner, &errmsg))
         throw rpc_error{ERROR_WRONG_PARAM, std::move(errmsg)};
 
-      // TODO(oxen): We now serialize both owner and backup_owner, since if
+      // TODO(worktips): We now serialize both owner and backup_owner, since if
       // we specify an owner that is backup owner, we don't show the (other)
       // owner. For RPC compatibility we keep the request_index around until the
       // next hard fork (16)
@@ -3590,7 +3590,7 @@ namespace cryptonote { namespace rpc {
       entry.name_hash       = std::move(record.name_hash);
       if (record.owner) entry.owner = record.owner.to_string(nettype());
       if (record.backup_owner) entry.backup_owner = record.backup_owner.to_string(nettype());
-      entry.encrypted_value = oxenmq::to_hex(record.encrypted_value.to_view());
+      entry.encrypted_value = worktipsmq::to_hex(record.encrypted_value.to_view());
       entry.update_height   = record.update_height;
       entry.expiration_height = record.expiration_height;
       entry.txid            = tools::type_to_hex(record.txid);
@@ -3616,15 +3616,15 @@ namespace cryptonote { namespace rpc {
     uint8_t hf_version = m_core.get_blockchain_storage().get_network_version();
     auto type = static_cast<ons::mapping_type>(req.type);
     if (!ons::mapping_type_allowed(hf_version, type))
-      throw rpc_error{ERROR_WRONG_PARAM, "Invalid lokinet type '" + std::to_string(req.type) + "'"};
+      throw rpc_error{ERROR_WRONG_PARAM, "Invalid worktipsnet type '" + std::to_string(req.type) + "'"};
 
     if (auto mapping = m_core.get_blockchain_storage().name_system_db().resolve(
         type, *name_hash, m_core.get_current_blockchain_height()))
     {
       auto [val, nonce] = mapping->value_nonce(type);
-      res.encrypted_value = oxenmq::to_hex(val);
+      res.encrypted_value = worktipsmq::to_hex(val);
       if (val.size() < mapping->to_view().size())
-        res.nonce = oxenmq::to_hex(nonce);
+        res.nonce = worktipsmq::to_hex(nonce);
     }
     return res;
   }

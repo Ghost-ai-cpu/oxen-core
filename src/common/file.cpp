@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -59,8 +59,8 @@
 
 #include "cryptonote_config.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "util"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "util"
 
 namespace tools {
 
@@ -276,7 +276,7 @@ namespace tools {
   }
   fs::path get_depreciated_default_data_dir()
   {
-    return get_special_folder_path(CSIDL_COMMON_APPDATA, true) / fs::u8path("loki");
+    return get_special_folder_path(CSIDL_COMMON_APPDATA, true) / fs::u8path("worktips");
   }
 #else
   // Non-windows: ~/.CRYPTONOTE_NAME
@@ -288,7 +288,7 @@ namespace tools {
   fs::path get_depreciated_default_data_dir()
   {
     char* home = std::getenv("HOME");
-    return (home && std::strlen(home) ? fs::u8path(home) : fs::current_path()) / fs::u8path(".loki");
+    return (home && std::strlen(home) ? fs::u8path(home) : fs::current_path()) / fs::u8path(".worktips");
   }
 #endif
 

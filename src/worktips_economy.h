@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-constexpr uint64_t COIN                       = (uint64_t)1000000000; // 1 LOKI = pow(10, 9)
+constexpr uint64_t COIN                       = (uint64_t)1000000000; // 1 WORKTIPS = pow(10, 9)
 constexpr uint64_t MONEY_SUPPLY               = ((uint64_t)(-1)); // MONEY_SUPPLY - total number coins to be generated
 constexpr uint64_t EMISSION_LINEAR_BASE       = ((uint64_t)(1) << 58);
 constexpr uint64_t EMISSION_SUPPLY_MULTIPLIER = 19;
@@ -15,8 +15,8 @@ constexpr uint64_t SN_REWARD_HF15         = BLOCK_REWARD_HF15 * 66 / 100;
 constexpr uint64_t FOUNDATION_REWARD_HF15 = BLOCK_REWARD_HF15 * 10 / 100;
 
 // HF16+ money supply parameters: same as HF15 except the miner fee goes away and is redirected to
-// LF to be used exclusively for Loki Chainflip liquidity seeding and incentives.  See
-// https://github.com/oxen-project/oxen-improvement-proposals/issues/24 for more details.  This ends
+// LF to be used exclusively for Worktips Chainflip liquidity seeding and incentives.  See
+// https://github.com/worktips-project/worktips-improvement-proposals/issues/24 for more details.  This ends
 // after 6 months.
 constexpr uint64_t BLOCK_REWARD_HF16        = BLOCK_REWARD_HF15;
 constexpr uint64_t CHAINFLIP_LIQUIDITY_HF16 = BLOCK_REWARD_HF15 * 24 / 100;
@@ -59,17 +59,17 @@ enum struct mapping_type : uint16_t
 {
   session = 0,
   wallet = 1,
-  lokinet = 2, // the type value stored in the database; counts as 1-year when used in a buy tx.
-  lokinet_2years,
-  lokinet_5years,
-  lokinet_10years,
+  worktipsnet = 2, // the type value stored in the database; counts as 1-year when used in a buy tx.
+  worktipsnet_2years,
+  worktipsnet_5years,
+  worktipsnet_10years,
   _count,
   update_record_internal,
 };
 
-constexpr bool is_lokinet_type(mapping_type t) { return t >= mapping_type::lokinet && t <= mapping_type::lokinet_10years; }
+constexpr bool is_worktipsnet_type(mapping_type t) { return t >= mapping_type::worktipsnet && t <= mapping_type::worktipsnet_10years; }
 
-// How many days we add per "year" of ONS lokinet registration.  We slightly extend this to the 368
+// How many days we add per "year" of ONS worktipsnet registration.  We slightly extend this to the 368
 // days per registration "year" to allow for some blockchain time drift + leap years.
 constexpr uint64_t REGISTRATION_YEAR_DAYS = 368;
 
@@ -77,7 +77,7 @@ constexpr uint64_t burn_needed(uint8_t hf_version, mapping_type type)
 {
   uint64_t result = 0;
 
-  // The base amount for session/wallet/lokinet-1year:
+  // The base amount for session/wallet/worktipsnet-1year:
   const uint64_t basic_fee = (
       hf_version >= 18 ? 7*COIN :  // cryptonote::network_version_18
       hf_version >= 16 ? 15*COIN :  // cryptonote::network_version_16_pulse -- but don't want to add cryptonote_config.h include
@@ -89,16 +89,16 @@ constexpr uint64_t burn_needed(uint8_t hf_version, mapping_type type)
       result = 0;
       break;
 
-    case mapping_type::lokinet: /* FALLTHRU */
+    case mapping_type::worktipsnet: /* FALLTHRU */
     case mapping_type::session: /* FALLTHRU */
     case mapping_type::wallet: /* FALLTHRU */
     default:
       result = basic_fee;
       break;
 
-    case mapping_type::lokinet_2years: result = 2 * basic_fee; break;
-    case mapping_type::lokinet_5years: result = 4 * basic_fee; break;
-    case mapping_type::lokinet_10years: result = 6 * basic_fee; break;
+    case mapping_type::worktipsnet_2years: result = 2 * basic_fee; break;
+    case mapping_type::worktipsnet_5years: result = 4 * basic_fee; break;
+    case mapping_type::worktipsnet_10years: result = 6 * basic_fee; break;
   }
   return result;
 }

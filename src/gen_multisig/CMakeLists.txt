@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Worktips Project
 # Copyright (c) 2017-2019, The Monero Project
 #
 # All rights reserved.
@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-oxen_add_executable(gen_multisig "oxen-gen-trusted-multisig"
+worktips_add_executable(gen_multisig "worktips-gen-trusted-multisig"
   gen_multisig.cpp
   )
 

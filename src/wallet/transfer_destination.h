@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -28,14 +28,14 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include <string>
 #include <cstdint>
 #include "epee/serialization/keyvalue_serialization.h"
 
 namespace wallet {
 
-OXEN_RPC_DOC_INTROSPECT
+WORKTIPS_RPC_DOC_INTROSPECT
 struct transfer_destination
 {
   std::string address; // Destination public address.

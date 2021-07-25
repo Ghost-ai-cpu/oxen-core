@@ -41,8 +41,8 @@
 #include "epee/string_tools.h"
 
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "wallet.mms"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "wallet.mms"
 
 namespace mms
 {
@@ -336,7 +336,7 @@ std::string message_store::create_auto_config_token()
   const crypto::hash &hash = crypto::cn_fast_hash(token_bytes.data(), token_bytes.size());
   token_bytes += hash.data[0];
   std::string prefix(AUTO_CONFIG_TOKEN_PREFIX);
-  return prefix + oxenmq::to_hex(token_bytes);
+  return prefix + worktipsmq::to_hex(token_bytes);
 }
 
 // Add a message for sending "me" address data to the auto-config transport address

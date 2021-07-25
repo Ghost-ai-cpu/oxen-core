@@ -38,8 +38,8 @@ extern "C"
 #include "rctOps.h"
 #include "multiexp.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "multiexp"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "multiexp"
 
 //#define MULTIEXP_PERF(x) x
 #define MULTIEXP_PERF(x)

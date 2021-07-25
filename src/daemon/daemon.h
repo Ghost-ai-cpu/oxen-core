@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -42,8 +42,8 @@
 #include "cryptonote_protocol/cryptonote_protocol_handler.h"
 #include "epee/misc_log_ex.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize
 {

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -39,13 +39,13 @@
 #include "blockchain_db/blockchain_db.h"
 #include "cryptonote_basic/cryptonote_format_utils.h"
 
-#include "common/oxen_integration_test_hooks.h"
-#include "common/oxen.h"
+#include "common/worktips_integration_test_hooks.h"
+#include "common/worktips.h"
 #include "common/file.h"
 #include "common/hex.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "checkpoints"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "checkpoints"
 
 namespace cryptonote
 {
@@ -81,7 +81,7 @@ namespace cryptonote
 
     if (nettype == MAINNET)
     {
-      uint64_t last_index         = oxen::array_count(HARDCODED_MAINNET_CHECKPOINTS) - 1;
+      uint64_t last_index         = worktips::array_count(HARDCODED_MAINNET_CHECKPOINTS) - 1;
       height_to_hash const &entry = HARDCODED_MAINNET_CHECKPOINTS[last_index];
 
       if (tools::hex_to_type(entry.hash, result))
@@ -149,7 +149,7 @@ namespace cryptonote
   }
   bool checkpoints::update_checkpoint(checkpoint_t const &checkpoint)
   {
-    // NOTE(oxen): Assumes checkpoint is valid
+    // NOTE(worktips): Assumes checkpoint is valid
     bool result        = true;
     bool batch_started = false;
     try
@@ -309,10 +309,10 @@ namespace cryptonote
     if (db->is_read_only())
       return true;
 
-#if !defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if !defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     if (nettype == MAINNET)
     {
-      for (size_t i = 0; i < oxen::array_count(HARDCODED_MAINNET_CHECKPOINTS); ++i)
+      for (size_t i = 0; i < worktips::array_count(HARDCODED_MAINNET_CHECKPOINTS); ++i)
       {
         height_to_hash const &checkpoint = HARDCODED_MAINNET_CHECKPOINTS[i];
         ADD_CHECKPOINT(checkpoint.height, checkpoint.hash);

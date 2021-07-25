@@ -18,8 +18,8 @@ extern "C"
 #include <sodium/crypto_generichash.h>
 };
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "pulse"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "pulse"
 
 // Deliberately makes pulse communications flakey for testing purposes:
 //#define PULSE_TEST_CODE
@@ -344,7 +344,7 @@ std::string msg_source_string(round_context const &context, pulse::message const
 bool msg_signature_check(pulse::message const &msg, crypto::hash const &top_block_hash, service_nodes::quorum const &quorum, std::string *error)
 {
   std::stringstream stream;
-  OXEN_DEFER {
+  WORKTIPS_DEFER {
     if (error) *error = stream.str();
   };
 
@@ -488,7 +488,7 @@ void pulse::handle_message(void *quorumnet_state, pulse::message const &msg)
     return;
   }
 
-  // TODO(oxen): We don't support messages from future rounds. A round
+  // TODO(worktips): We don't support messages from future rounds. A round
   // mismatch will be detected in the signature as the round is included in the
   // signature hash.
 
@@ -882,7 +882,7 @@ Yes +-----[Block can not be added to blockchain]
       Genesis Pulse Block for the base timestamp and the top block hash and
       height for signatures.
 
-    - // TODO(oxen): After the Genesis Pulse Block is checkpointed, we can
+    - // TODO(worktips): After the Genesis Pulse Block is checkpointed, we can
       // remove it from the event loop. Right now we recheck every block incase
       // of (the very unlikely event) reorgs that might change the block at the
       // hardfork.
@@ -1565,7 +1565,7 @@ round_state send_and_wait_for_random_value(round_context &context, service_nodes
       {
         if (auto &random_value = quorum[index]; random_value)
         {
-          epee::wipeable_string string = oxenmq::to_hex(tools::view_guts(random_value->data));
+          epee::wipeable_string string = worktipsmq::to_hex(tools::view_guts(random_value->data));
 
 #if defined(NDEBUG)
           // Mask the random value generated incase someone is snooping logs
@@ -1596,7 +1596,7 @@ round_state send_and_wait_for_random_value(round_context &context, service_nodes
     crypto::hash const &final_block_hash = cryptonote::get_block_hash(final_block);
     crypto::generate_signature(final_block_hash, key.pub, key.key, context.transient.signed_block.send.data);
 
-    MINFO(log_prefix(context) << "Block final random value " << oxenmq::to_hex(tools::view_guts(final_block.pulse.random_value.data)) << " generated from validators " << bitset_view16(stage.bitset));
+    MINFO(log_prefix(context) << "Block final random value " << worktipsmq::to_hex(tools::view_guts(final_block.pulse.random_value.data)) << " generated from validators " << bitset_view16(stage.bitset));
     return round_state::send_and_wait_for_signed_blocks;
   }
 

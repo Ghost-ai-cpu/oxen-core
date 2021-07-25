@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -30,7 +30,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #ifdef _WIN32
- #define __STDC_FORMAT_MACROS // NOTE(oxen): Explicitly define the PRIu64 macro on Mingw
+ #define __STDC_FORMAT_MACROS // NOTE(worktips): Explicitly define the PRIu64 macro on Mingw
 #endif
 
 #include "wallet.h"
@@ -54,8 +54,8 @@
 
 using namespace cryptonote;
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "WalletAPI"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "WalletAPI"
 
 namespace Wallet {
 
@@ -71,7 +71,7 @@ namespace {
     fs::path get_default_ringdb_path(cryptonote::network_type nettype)
     {
       auto dir = tools::get_default_data_dir();
-      // remove .oxen, replace with .shared-ringdb
+      // remove .worktips, replace with .shared-ringdb
       dir.replace_filename(".shared-ringdb");
       if (nettype == cryptonote::TESTNET)
         dir /= "testnet";
@@ -344,14 +344,14 @@ std::string Wallet::genPaymentId()
 EXPORT
 bool Wallet::paymentIdValid(const std::string &payment_id)
 {
-    return payment_id.size() == 16 && oxenmq::is_hex(payment_id);
+    return payment_id.size() == 16 && worktipsmq::is_hex(payment_id);
 }
 
 EXPORT
 bool Wallet::serviceNodePubkeyValid(const std::string &str)
 {
     crypto::public_key sn_key;
-    return str.size() == 64 && oxenmq::is_hex(str);
+    return str.size() == 64 && worktipsmq::is_hex(str);
 }
 
 EXPORT
@@ -423,22 +423,22 @@ void Wallet::init(const char *argv0, const char *default_log_base_name, const st
 
 EXPORT
 void Wallet::debug(const std::string &category, const std::string &str) {
-    MCDEBUG(category.empty() ? OXEN_DEFAULT_LOG_CATEGORY : category.c_str(), str);
+    MCDEBUG(category.empty() ? WORKTIPS_DEFAULT_LOG_CATEGORY : category.c_str(), str);
 }
 
 EXPORT
 void Wallet::info(const std::string &category, const std::string &str) {
-    MCINFO(category.empty() ? OXEN_DEFAULT_LOG_CATEGORY : category.c_str(), str);
+    MCINFO(category.empty() ? WORKTIPS_DEFAULT_LOG_CATEGORY : category.c_str(), str);
 }
 
 EXPORT
 void Wallet::warning(const std::string &category, const std::string &str) {
-    MCWARNING(category.empty() ? OXEN_DEFAULT_LOG_CATEGORY : category.c_str(), str);
+    MCWARNING(category.empty() ? WORKTIPS_DEFAULT_LOG_CATEGORY : category.c_str(), str);
 }
 
 EXPORT
 void Wallet::error(const std::string &category, const std::string &str) {
-    MCERROR(category.empty() ? OXEN_DEFAULT_LOG_CATEGORY : category.c_str(), str);
+    MCERROR(category.empty() ? WORKTIPS_DEFAULT_LOG_CATEGORY : category.c_str(), str);
 }
 
 ///////////////////////// WalletImpl implementation ////////////////////////
@@ -1435,7 +1435,7 @@ bool WalletImpl::exportMultisigImages(std::string& images) {
         checkMultisigWalletReady(m_wallet);
 
         auto blob = m_wallet->export_multisig();
-        images = oxenmq::to_hex(blob);
+        images = worktipsmq::to_hex(blob);
         return true;
     } catch (const std::exception& e) {
         LOG_ERROR("Error on exporting multisig images: " << e.what());
@@ -1598,7 +1598,7 @@ PendingTransaction *WalletImpl::createTransactionMultDest(const std::vector<std:
             }
 
             if (amount) {
-                oxen_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, txtype::standard, priority);
+                worktips_construct_tx_params tx_params = tools::wallet2::construct_params(*hf_version, txtype::standard, priority);
                 transaction->m_pending_tx = m_wallet->create_transactions_2(dsts, CRYPTONOTE_DEFAULT_TX_MIXIN, 0 /* unlock_time */,
                                                                             priority,
                                                                             extra, subaddr_account, subaddr_indices, tx_params);

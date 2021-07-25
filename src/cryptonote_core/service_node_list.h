@@ -1,4 +1,4 @@
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -55,7 +55,7 @@ namespace service_nodes
 {
   constexpr uint64_t INVALID_HEIGHT = static_cast<uint64_t>(-1);
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct participation_entry
   {
     bool is_pulse   = false;
@@ -155,7 +155,7 @@ namespace service_nodes
     uint64_t effective_timestamp = 0; // Typically the same, but on recommissions it is set to the recommission block time to fend off instant obligation checks
     std::array<std::pair<uint32_t, uint64_t>, 2> public_ips = {}; // (not serialized)
 
-    // See set_storage_server_peer_reachable(...) and set_lokinet_peer_reachable(...)
+    // See set_storage_server_peer_reachable(...) and set_worktipsnet_peer_reachable(...)
     struct reachable_stats {
         std::chrono::steady_clock::time_point
             last_reachable = NEVER,
@@ -177,7 +177,7 @@ namespace service_nodes
 
     };
     reachable_stats ss_reachable;
-    reachable_stats lokinet_reachable;
+    reachable_stats worktipsnet_reachable;
 
     // Unlike all of the above (except for timestamp), these values *do* get serialized
     std::unique_ptr<uptime_proof::Proof> proof;
@@ -428,7 +428,7 @@ namespace service_nodes
     /// The service node key pair used for registration-related data on the chain; is
     /// curve25519-based but with Monero-specific changes that make it useless for external tools
     /// supporting standard ed25519 or x25519 keys.
-    /// TODO(oxen) - eventually drop this key and just do everything with the ed25519 key.
+    /// TODO(worktips) - eventually drop this key and just do everything with the ed25519 key.
     crypto::secret_key key;
     crypto::public_key pub;
 
@@ -502,7 +502,7 @@ namespace service_nodes
     /// Initializes the x25519 map from current pubkey state; called during initialization
     void initialize_x25519_map();
 
-    /// Remote SN lookup address function for OxenMQ: given a string_view of a x25519 pubkey, this
+    /// Remote SN lookup address function for WorktipsMQ: given a string_view of a x25519 pubkey, this
     /// returns that service node's quorumnet contact information, if we have it, else empty string.
     std::string remote_lookup(std::string_view x25519_pk);
 
@@ -557,7 +557,7 @@ namespace service_nodes
                                                                    uint16_t storage_omq_port,
                                                                    uint16_t quorumnet_port) const;
     
-    uptime_proof::Proof generate_uptime_proof(uint32_t public_ip, uint16_t storage_port, uint16_t storage_omq_port, std::array<uint16_t, 3> ss_version, uint16_t quorumnet_port, std::array<uint16_t, 3> lokinet_version) const;
+    uptime_proof::Proof generate_uptime_proof(uint32_t public_ip, uint16_t storage_port, uint16_t storage_omq_port, std::array<uint16_t, 3> ss_version, uint16_t quorumnet_port, std::array<uint16_t, 3> worktipsnet_version) const;
 
     //TODO: remove after HF18
     bool handle_uptime_proof(cryptonote::NOTIFY_UPTIME_PROOF::request const &proof, bool &my_uptime_proof_confirmation, crypto::x25519_public_key &x25519_pkey);
@@ -569,8 +569,8 @@ namespace service_nodes
     // Called every hour to remove proofs for expired SNs from memory and the database.
     void cleanup_proofs();
 
-    // Called via RPC from storage server/lokinet to report a ping test result for a remote storage
-    // server/lokinet.
+    // Called via RPC from storage server/worktipsnet to report a ping test result for a remote storage
+    // server/worktipsnet.
     //
     // How this works:
     // - SS randomly picks probably-good nodes to test every 10s (with fuzz), and pings
@@ -586,8 +586,8 @@ namespace service_nodes
     // - otherwise we consider it good.  (Which means either it passed a reachability test at least
     //   once in the last 1h5min *or* SS stopped pinging it, perhaps because it restarted).
     //
-    // Lokinet works essentially the same, except that its concept of a "ping" is being able to
-    // successfully establish a session with the given remote lokinet snode.
+    // Worktipsnet works essentially the same, except that its concept of a "ping" is being able to
+    // successfully establish a session with the given remote worktipsnet snode.
     //
     // We do all this by tracking three values:
     // - last_reachable
@@ -610,7 +610,7 @@ namespace service_nodes
     // UPTIME_PROOF_VALIDITY-UPTIME_PROOF_FREQUENCY (which is actually 11min on testnet rather than
     // 1h5min)).
     bool set_storage_server_peer_reachable(crypto::public_key const &pubkey, bool value);
-    bool set_lokinet_peer_reachable(crypto::public_key const &pubkey, bool value);
+    bool set_worktipsnet_peer_reachable(crypto::public_key const &pubkey, bool value);
   private:
     bool set_peer_reachable(bool storage_server, crypto::public_key const &pubkey, bool value);
   public:

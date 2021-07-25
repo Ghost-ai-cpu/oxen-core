@@ -35,8 +35,8 @@ namespace trezor {
 
 #ifdef WITH_DEVICE_TREZOR
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "device.trezor"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "device.trezor"
 
 #define HW_TREZOR_NAME "Trezor"
 

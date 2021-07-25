@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -36,8 +36,8 @@
 #include "daemon/command_parser_executor.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize {
 
@@ -916,10 +916,10 @@ bool command_parser_executor::prune_blockchain(const std::vector<std::string>& a
 
   if (args.empty() || args[0] != "confirm")
   {
-    std::cout << "Warning: pruning from within oxend will not shrink the database file size." << std::endl;
+    std::cout << "Warning: pruning from within worktipsd will not shrink the database file size." << std::endl;
     std::cout << "Instead, parts of the file will be marked as free, so the file will not grow" << std::endl;
     std::cout << "until that newly free space is used up. If you want a smaller file size now," << std::endl;
-    std::cout << "exit oxend and run oxen-blockchain-prune (you will temporarily need more" << std::endl;
+    std::cout << "exit worktipsd and run worktips-blockchain-prune (you will temporarily need more" << std::endl;
     std::cout << "disk space for the database conversion though). If you are OK with the database" << std::endl;
     std::cout << "file keeping the same size, re-run this command with the \"confirm\" parameter." << std::endl;
     return true;

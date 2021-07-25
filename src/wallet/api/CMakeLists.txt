@@ -1,4 +1,4 @@
-# Copyright (c) 2018, The Loki Project
+# Copyright (c) 2018, The Worktips Project
 # Copyright (c) 2014-2019, The Monero Project
 #
 # All rights reserved.
@@ -133,7 +133,7 @@ if (STATIC AND BUILD_STATIC_DEPS)
             sodium
             libzmq
             CURL::libcurl
-            oxenmq::oxenmq
+            worktipsmq::worktipsmq
             lmdb
             easylogging
             randomx

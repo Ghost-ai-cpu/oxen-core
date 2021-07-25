@@ -35,8 +35,8 @@
 using namespace crypto;
 using namespace std;
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "ringct"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
 

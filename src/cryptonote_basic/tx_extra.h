@@ -36,7 +36,7 @@
 #include "serialization/variant.h"
 #include "crypto/crypto.h"
 #include "common/hex.h"
-#include "oxen_economy.h"
+#include "worktips_economy.h"
 #include "cryptonote_basic.h"
 
 
@@ -62,7 +62,7 @@ constexpr uint8_t
   TX_EXTRA_TAG_TX_KEY_IMAGE_UNLOCK        = 0x77,
   TX_EXTRA_TAG_SERVICE_NODE_STATE_CHANGE  = 0x78,
   TX_EXTRA_TAG_BURN                       = 0x79,
-  TX_EXTRA_TAG_OXEN_NAME_SYSTEM           = 0x7A,
+  TX_EXTRA_TAG_WORKTIPS_NAME_SYSTEM           = 0x7A,
 
   TX_EXTRA_MYSTERIOUS_MINERGATE_TAG       = 0xDE;
 
@@ -423,7 +423,7 @@ namespace cryptonote
     storage_server_unreachable = 1 << 3,
     timestamp_response_unreachable = 1 << 4,
     timesync_status_out_of_sync = 1 << 5,
-    lokinet_unreachable = 1 << 6,
+    worktipsnet_unreachable = 1 << 6,
   };
 
   // Returns human-readable reason strings (e.g. "Missed Uptime Proofs") for the given reason bits
@@ -532,7 +532,7 @@ namespace cryptonote
     END_SERIALIZE()
   };
 
-  struct tx_extra_oxen_name_system
+  struct tx_extra_worktips_name_system
   {
     uint8_t                 version = 0;
     ons::mapping_type       type;
@@ -551,11 +551,11 @@ namespace cryptonote
     bool is_updating() const { return field_is_set(ons::extra_field::signature) && field_any_set(ons::extra_field::updatable_fields); }
     // True if this is buying a new ONS record
     bool is_buying()   const { return (fields == ons::extra_field::buy || fields == ons::extra_field::buy_no_backup); }
-    // True if this is renewing an existing ONS: has no fields at all, is a renewal registration (i.e. lokinet),
+    // True if this is renewing an existing ONS: has no fields at all, is a renewal registration (i.e. worktipsnet),
     // and has a non-null txid set (which should point to the most recent registration or update).
-    bool is_renewing() const { return fields == ons::extra_field::none && prev_txid && is_lokinet_type(type); }
+    bool is_renewing() const { return fields == ons::extra_field::none && prev_txid && is_worktipsnet_type(type); }
 
-    static tx_extra_oxen_name_system make_buy(
+    static tx_extra_worktips_name_system make_buy(
         ons::generic_owner const& owner,
         ons::generic_owner const* backup_owner,
         ons::mapping_type type,
@@ -563,9 +563,9 @@ namespace cryptonote
         const std::string& encrypted_value,
         const crypto::hash& prev_txid);
 
-    static tx_extra_oxen_name_system make_renew(ons::mapping_type type, const crypto::hash& name_hash, const crypto::hash& prev_txid);
+    static tx_extra_worktips_name_system make_renew(ons::mapping_type type, const crypto::hash& name_hash, const crypto::hash& prev_txid);
 
-    static tx_extra_oxen_name_system make_update(
+    static tx_extra_worktips_name_system make_update(
         const ons::generic_signature& signature,
         ons::mapping_type type,
         const crypto::hash& name_hash,
@@ -606,7 +606,7 @@ namespace cryptonote
       tx_extra_service_node_contributor,
       tx_extra_service_node_pubkey,
       tx_extra_tx_secret_key,
-      tx_extra_oxen_name_system,
+      tx_extra_worktips_name_system,
       tx_extra_tx_key_image_proofs,
       tx_extra_tx_key_image_unlock,
       tx_extra_burn,
@@ -635,4 +635,4 @@ BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_secret_key,               cryptonote:
 BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_key_image_proofs,         cryptonote::TX_EXTRA_TAG_TX_KEY_IMAGE_PROOFS);
 BINARY_VARIANT_TAG(cryptonote::tx_extra_tx_key_image_unlock,         cryptonote::TX_EXTRA_TAG_TX_KEY_IMAGE_UNLOCK);
 BINARY_VARIANT_TAG(cryptonote::tx_extra_burn,                        cryptonote::TX_EXTRA_TAG_BURN);
-BINARY_VARIANT_TAG(cryptonote::tx_extra_oxen_name_system,            cryptonote::TX_EXTRA_TAG_OXEN_NAME_SYSTEM);
+BINARY_VARIANT_TAG(cryptonote::tx_extra_worktips_name_system,            cryptonote::TX_EXTRA_TAG_WORKTIPS_NAME_SYSTEM);

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020, The Loki Project
+// Copyright (c) 2019-2020, The Worktips Project
 //
 // All rights reserved.
 //
@@ -28,7 +28,7 @@
 
 #pragma once
 
-// This file (plus .cpp) contains the glue layer between cryptonote_core and oxen-mq.
+// This file (plus .cpp) contains the glue layer between cryptonote_core and worktips-mq.
 
 #include <vector>
 

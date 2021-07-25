@@ -51,7 +51,7 @@
 #include "trezor_defs.hpp"
 #include "messages_map.hpp"
 
-#include "common/oxen.h"
+#include "common/worktips.h"
 
 #include "messages/messages.pb.h"
 #include "messages/messages-common.pb.h"
@@ -167,7 +167,7 @@ namespace trezor {
       t_serialize(request, req);
 
       std::string res;
-      OXEN_DEFER { if (!res.empty()) memwipe(res.data(), res.size()); };
+      WORKTIPS_DEFER { if (!res.empty()) memwipe(res.data(), res.size()); };
 
       try {
         res = post_json(uri, std::move(req));

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, The Loki Project
+// Copyright (c) 2020, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -31,16 +31,16 @@
 
 #include "core_rpc_server.h"
 #include "cryptonote_core/blockchain.h"
-#include "oxenmq/connections.h"
+#include "worktipsmq/connections.h"
 
-namespace oxenmq { class OxenMQ; }
+namespace worktipsmq { class WorktipsMQ; }
 
 namespace cryptonote { namespace rpc {
 
 void init_omq_options(boost::program_options::options_description& desc);
 
 /**
- * LMQ RPC server class.  This doesn't actually hold the OxenMQ instance--that's in
+ * LMQ RPC server class.  This doesn't actually hold the WorktipsMQ instance--that's in
  * cryptonote_core--but it works with it to add RPC endpoints, make it listen on RPC ports, and
  * handles RPC requests.
  */
@@ -59,8 +59,8 @@ class omq_rpc final : public cryptonote::BlockAddedHook {
   cryptonote::core& core_;
   core_rpc_server& rpc_;
   std::shared_timed_mutex subs_mutex_;
-  std::unordered_map<oxenmq::ConnectionID, mempool_sub> mempool_subs_;
-  std::unordered_map<oxenmq::ConnectionID, block_sub> block_subs_;
+  std::unordered_map<worktipsmq::ConnectionID, mempool_sub> mempool_subs_;
+  std::unordered_map<worktipsmq::ConnectionID, block_sub> block_subs_;
 
 public:
   omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::program_options::variables_map& vm);

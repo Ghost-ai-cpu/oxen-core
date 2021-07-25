@@ -1,4 +1,4 @@
-// Copyright (c) 2018, The Loki Project
+// Copyright (c) 2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -26,14 +26,14 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OXEN_H
-#define OXEN_H
+#ifndef WORKTIPS_H
+#define WORKTIPS_H
 
 #include <cstddef>
 #include <utility>
 
-#define OXEN_RPC_DOC_INTROSPECT
-namespace oxen
+#define WORKTIPS_RPC_DOC_INTROSPECT
+namespace worktips
 {
 double      round           (double);
 double      exp2            (double);
@@ -66,9 +66,9 @@ struct defer_helper
   deferred<lambda_t> operator+(lambda_t lambda) { return lambda; }
 };
 
-#define OXEN_TOKEN_COMBINE2(x, y) x ## y
-#define OXEN_TOKEN_COMBINE(x, y) OXEN_TOKEN_COMBINE2(x, y)
-#define OXEN_DEFER auto const OXEN_TOKEN_COMBINE(oxen_defer_, __LINE__) = oxen::defer_helper() + [&]()
+#define WORKTIPS_TOKEN_COMBINE2(x, y) x ## y
+#define WORKTIPS_TOKEN_COMBINE(x, y) WORKTIPS_TOKEN_COMBINE2(x, y)
+#define WORKTIPS_DEFER auto const WORKTIPS_TOKEN_COMBINE(worktips_defer_, __LINE__) = worktips::defer_helper() + [&]()
 
 template <typename T, size_t N>
 constexpr size_t array_count(T (&)[N]) { return N; }
@@ -76,6 +76,6 @@ constexpr size_t array_count(T (&)[N]) { return N; }
 template <typename T, size_t N>
 constexpr size_t char_count(T (&)[N]) { return N - 1; }
 
-}; // namespace Oxen
+}; // namespace Worktips
 
-#endif // OXEN_H
+#endif // WORKTIPS_H

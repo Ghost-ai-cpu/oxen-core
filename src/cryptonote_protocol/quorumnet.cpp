@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020, The Loki Project
+// Copyright (c) 2019-2020, The Worktips Project
 //
 // All rights reserved.
 //
@@ -39,21 +39,21 @@
 #include "cryptonote_config.h"
 #include "common/random.h"
 
-#include <oxenmq/oxenmq.h>
-#include <oxenmq/hex.h>
+#include <worktipsmq/worktipsmq.h>
+#include <worktipsmq/hex.h>
 #include <shared_mutex>
 #include <iterator>
 #include <time.h>
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "qnet"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "qnet"
 
 namespace quorumnet {
 
 namespace {
 
 using namespace service_nodes;
-using namespace oxenmq;
+using namespace worktipsmq;
 
 using blink_tx = cryptonote::blink_tx;
 
@@ -72,7 +72,7 @@ using pending_signature_set = std::unordered_set<pending_signature, pending_sign
 
 struct QnetState {
     cryptonote::core &core;
-    OxenMQ &omq{core.get_omq()};
+    WorktipsMQ &omq{core.get_omq()};
 
     // Track submitted blink txes here; unlike the blinks stored in the mempool we store these ones
     // more liberally to track submitted blinks, even if unsigned/unacceptable, while the mempool
@@ -320,7 +320,7 @@ public:
     }
 
 private:
-    OxenMQ &omq;
+    WorktipsMQ &omq;
 
     /// Looks up a pubkey in known remotes and adds it to `peers`.  If strong, it is added with an
     /// address, otherwise it is added with an empty address.  If the element already exists, it
@@ -828,7 +828,7 @@ void process_blink_signatures(QnetState &qnet, const std::shared_ptr<blink_tx> &
 ///     "#" - precomputed tx hash.  This much match the actual hash of the transaction (the blink
 ///           submission will fail immediately if it does not).
 ///
-void handle_blink(oxenmq::Message& m, QnetState& qnet) {
+void handle_blink(worktipsmq::Message& m, QnetState& qnet) {
     // TODO: if someone sends an invalid tx (i.e. one that doesn't get to the distribution stage)
     // then put a timeout on that IP during which new submissions from them are dropped for a short
     // time.

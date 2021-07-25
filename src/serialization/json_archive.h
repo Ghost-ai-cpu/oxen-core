@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -42,7 +42,7 @@
 #include <iostream>
 #include <iomanip>
 #include <exception>
-#include <oxenmq/hex.h>
+#include <worktipsmq/hex.h>
 
 namespace serialization {
 
@@ -115,7 +115,7 @@ struct json_archiver : public serializer
   void serialize_blob(void *buf, size_t len, std::string_view delimiter="\""sv) {
     stream_ << delimiter;
     auto* begin = static_cast<unsigned char*>(buf);
-    oxenmq::to_hex(begin, begin + len, std::ostreambuf_iterator{stream_});
+    worktipsmq::to_hex(begin, begin + len, std::ostreambuf_iterator{stream_});
     stream_ << delimiter;
   }
 

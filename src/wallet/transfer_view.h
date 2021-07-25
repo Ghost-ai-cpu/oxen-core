@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -28,7 +28,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include <string>
 #include <vector>
 #include "cryptonote_basic/subaddress_index.h"
@@ -71,12 +71,12 @@ inline pay_type pay_type_from_tx(const cryptonote::transaction tx)
   switch(tx.type)
   {
     case cryptonote::txtype::stake: return wallet::pay_type::stake;
-    case cryptonote::txtype::oxen_name_system: return wallet::pay_type::ons;
+    case cryptonote::txtype::worktips_name_system: return wallet::pay_type::ons;
     default: return wallet::pay_type::out;
   }
 }
 
-OXEN_RPC_DOC_INTROSPECT
+WORKTIPS_RPC_DOC_INTROSPECT
 struct transfer_view
 {
   std::string txid;                                          // Transaction ID for this transfer.
@@ -101,10 +101,10 @@ struct transfer_view
   bool was_blink;                                            // True if we saw this as an approved blink (either in the mempool or a recent, uncheckpointed block).  Note that if we didn't see it while an active blink this won't be set.
 
   // Not serialized, for internal wallet2 use
-  wallet::pay_type pay_type;                                 // @NoLokiRPCDocGen Internal use only, not serialized
-  bool            confirmed;                                 // @NoLokiRPCDocGen Internal use only, not serialized
-  crypto::hash    hash;                                      // @NoLokiRPCDocGen Internal use only, not serialized
-  std::string     lock_msg;                                  // @NoLokiRPCDocGen Internal use only, not serialized
+  wallet::pay_type pay_type;                                 // @NoWorktipsRPCDocGen Internal use only, not serialized
+  bool            confirmed;                                 // @NoWorktipsRPCDocGen Internal use only, not serialized
+  crypto::hash    hash;                                      // @NoWorktipsRPCDocGen Internal use only, not serialized
+  std::string     lock_msg;                                  // @NoWorktipsRPCDocGen Internal use only, not serialized
 
   KV_MAP_SERIALIZABLE
 };

@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -50,8 +50,8 @@
 #include "common/perf_timer.h"
 #include "crypto/hash.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "txpool"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "txpool"
 
 DISABLE_VS_WARNINGS(4244 4345 4503) //'boost::foreach_detail_::or_' : decorated name length exceeded, name was truncated
 
@@ -186,9 +186,9 @@ namespace cryptonote
       }
 
     }
-    else if (tx.type == txtype::oxen_name_system)
+    else if (tx.type == txtype::worktips_name_system)
     {
-      tx_extra_oxen_name_system data;
+      tx_extra_worktips_name_system data;
       if (!cryptonote::get_field_from_tx_extra(tx.extra, data))
       {
         MERROR("Could not get acquire name service from tx: " << get_transaction_hash(tx) << ", tx to add is possibly invalid, rejecting");
@@ -202,7 +202,7 @@ namespace cryptonote
         if (pool_tx.type != tx.type)
           continue;
 
-        tx_extra_oxen_name_system pool_data;
+        tx_extra_worktips_name_system pool_data;
         if (!cryptonote::get_field_from_tx_extra(pool_tx.extra, pool_data))
         {
           LOG_PRINT_L1("Could not get acquire name service from tx: " << get_transaction_hash(tx) << ", possibly corrupt tx in the pool");
@@ -220,7 +220,7 @@ namespace cryptonote
     {
       if (tx.type != txtype::standard && tx.type != txtype::stake)
       {
-        // NOTE(oxen): This is a developer error. If we come across this in production, be conservative and just reject
+        // NOTE(worktips): This is a developer error. If we come across this in production, be conservative and just reject
         MERROR("Unrecognised transaction type: " << tx.type << " for tx: " << get_transaction_hash(tx));
         return true;
       }
@@ -1404,7 +1404,7 @@ namespace cryptonote
       if (pool_tx.type == txtype::state_change &&
           get_service_node_state_change_from_tx_extra(pool_tx.extra, state_change, blk.major_version))
       {
-        // TODO(oxen): PERF(oxen): On pop_blocks we return all the TXs to the
+        // TODO(worktips): PERF(worktips): On pop_blocks we return all the TXs to the
         // pool. The greater the pop_blocks, the more txs that are queued in the
         // pool, and for every subsequent block you sync, get_transactions has
         // to allocate these transactions and we have to search every
@@ -1769,11 +1769,11 @@ end:
     uint64_t best_reward = 0;
     {
       // NOTE: Calculate base line empty block reward
-      oxen_block_reward_context block_reward_context = {};
+      worktips_block_reward_context block_reward_context = {};
       block_reward_context.height                    = height;
 
       block_reward_parts reward_parts = {};
-      if (!get_oxen_block_reward(median_weight, total_weight, already_generated_coins, version, reward_parts, block_reward_context))
+      if (!get_worktips_block_reward(median_weight, total_weight, already_generated_coins, version, reward_parts, block_reward_context))
       {
         MERROR("Failed to get block reward for empty block");
         return false;
@@ -1810,12 +1810,12 @@ end:
       }
 
       // NOTE: Calculate the next block reward for the block producer
-      oxen_block_reward_context next_block_reward_context = {};
+      worktips_block_reward_context next_block_reward_context = {};
       next_block_reward_context.height                    = height;
       next_block_reward_context.fee                       = raw_fee + meta.fee;
 
       block_reward_parts next_reward_parts           = {};
-      if(!get_oxen_block_reward(median_weight, total_weight + meta.weight, already_generated_coins, version, next_reward_parts, next_block_reward_context))
+      if(!get_worktips_block_reward(median_weight, total_weight + meta.weight, already_generated_coins, version, next_reward_parts, next_block_reward_context))
       {
         LOG_PRINT_L2("Block reward calculation bug");
         return false;

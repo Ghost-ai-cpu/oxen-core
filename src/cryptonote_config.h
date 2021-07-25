@@ -62,7 +62,7 @@ static_assert(STAKING_PORTIONS % 12 == 0, "Use a multiple of twelve, so that it 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               11
 
 #define CRYPTONOTE_REWARD_BLOCKS_WINDOW                 100
-#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1    20000 // NOTE(oxen): For testing suite, //size of block (bytes) after which reward for block calculated using block size - before first fork
+#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1    20000 // NOTE(worktips): For testing suite, //size of block (bytes) after which reward for block calculated using block size - before first fork
 #define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5    300000 //size of block (bytes) after which reward for block calculated using block size - second change, from v5
 #define CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE   100000 // size in blocks of the long term block weight median window
 #define CRYPTONOTE_SHORT_TERM_BLOCK_WEIGHT_SURGE_FACTOR 50
@@ -71,8 +71,8 @@ static_assert(STAKING_PORTIONS % 12 == 0, "Use a multiple of twelve, so that it 
 
 #define FEE_PER_BYTE_V12                                ((uint64_t)17200) // Higher fee in v12 (only, v13 switches back)
 #define FEE_PER_BYTE_V13                                ((uint64_t)215)   // Fallback used in wallet if no fee is available from RPC
-#define FEE_PER_OUTPUT_V13                              ((uint64_t)20000000) // 0.02 OXEN per tx output (in addition to the per-byte fee), starting in v13
-#define FEE_PER_OUTPUT_V18                              ((uint64_t)5000000) // 0.005 OXEN per tx output (in addition to the per-byte fee), starting in v18
+#define FEE_PER_OUTPUT_V13                              ((uint64_t)20000000) // 0.02 WORKTIPS per tx output (in addition to the per-byte fee), starting in v13
+#define FEE_PER_OUTPUT_V18                              ((uint64_t)5000000) // 0.005 WORKTIPS per tx output (in addition to the per-byte fee), starting in v18
 #define DYNAMIC_FEE_PER_KB_BASE_BLOCK_REWARD            ((uint64_t)10000000000000) // 10 * pow(10,12)
 #define DYNAMIC_FEE_PER_KB_BASE_FEE_V5                  ((uint64_t)400000000)
 #define DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT        ((uint64_t)3000)
@@ -157,7 +157,7 @@ constexpr uint64_t BLOCKS_EXPECTED_IN_YEARS(int years) { return BLOCKS_EXPECTED_
 #define P2P_SUPPORT_FLAG_FLUFFY_BLOCKS                  0x01
 #define P2P_SUPPORT_FLAGS                               P2P_SUPPORT_FLAG_FLUFFY_BLOCKS
 
-#define CRYPTONOTE_NAME                         "oxen"
+#define CRYPTONOTE_NAME                         "worktips"
 #define CRYPTONOTE_POOLDATA_FILENAME            "poolstate.bin"
 #define CRYPTONOTE_BLOCKCHAINDATA_FILENAME      "data.mdb"
 #define CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME "lock.mdb"
@@ -241,7 +241,7 @@ namespace config
   inline constexpr auto UPTIME_PROOF_CHECK_INTERVAL = 30s; // How frequently to check whether we need to broadcast a proof
   inline constexpr auto UPTIME_PROOF_FREQUENCY = 1h; // How often to send proofs out to the network since the last proof we successfully sent.  (Approximately; this can be up to CHECK_INTERFACE/2 off in either direction).  The minimum accepted time between proofs is half of this.
   inline constexpr auto UPTIME_PROOF_VALIDITY = 2h + 5min; // The maximum time that we consider an uptime proof to be valid (i.e. after this time since the last proof we consider the SN to be down)
-  inline constexpr auto REACHABLE_MAX_FAILURE_VALIDITY = 5min; // If we don't hear any SS ping/lokinet session test failures for more than this long then we start considering the SN as passing for the purpose of obligation testing until we get another test result.  This should be somewhat larger than SS/lokinet's max re-test backoff (2min).
+  inline constexpr auto REACHABLE_MAX_FAILURE_VALIDITY = 5min; // If we don't hear any SS ping/worktipsnet session test failures for more than this long then we start considering the SN as passing for the purpose of obligation testing until we get another test result.  This should be somewhat larger than SS/worktipsnet's max re-test backoff (2min).
 
   // Hash domain separators
   inline constexpr std::string_view HASH_KEY_BULLETPROOF_EXPONENT = "bulletproof"sv;
@@ -332,7 +332,7 @@ namespace cryptonote
     network_version_9_service_nodes, // Proof Of Stake w/ Service Nodes
     network_version_10_bulletproofs, // Bulletproofs, Service Node Grace Registration Period, Batched Governance
     network_version_11_infinite_staking, // Infinite Staking, CN-Turtle
-    network_version_12_checkpointing, // Checkpointing, Relaxed Deregistration, RandomXL, Oxen Storage Server
+    network_version_12_checkpointing, // Checkpointing, Relaxed Deregistration, RandomXL, Worktips Storage Server
     network_version_13_enforce_checkpoints,
     network_version_14_blink,
     network_version_15_ons,

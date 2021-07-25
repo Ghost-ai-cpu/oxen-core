@@ -44,7 +44,7 @@
 #include "epee/misc_language.h"
 #include "epee/int-util.h"
 #include "mnemonics/electrum-words.h"
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include <boost/crc.hpp>
 
 #include "chinese_simplified.h"
@@ -63,8 +63,8 @@
 #include "language_base.h"
 #include "singleton.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "mnemonic"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "mnemonic"
 
 namespace crypto
 {
@@ -293,7 +293,7 @@ namespace crypto
       }
 
       std::vector<uint32_t> matched_indices;
-      OXEN_DEFER { memwipe(matched_indices.data(), matched_indices.size() * sizeof(matched_indices[0])); };
+      WORKTIPS_DEFER { memwipe(matched_indices.data(), matched_indices.size() * sizeof(matched_indices[0])); };
       Language::Base *language;
       if (!find_seed_language(seed, has_checksum, matched_indices, &language))
       {

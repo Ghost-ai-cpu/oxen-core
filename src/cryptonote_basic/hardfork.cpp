@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021, The Loki Project
+// Copyright (c) 2018-2021, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -35,24 +35,24 @@ namespace cryptonote {
 // version 7 from the start of the blockchain, inhereted from Monero mainnet
 static constexpr std::array mainnet_hard_forks =
 {
-  hard_fork{7,  0,        0, 1503046577 }, // Loki 0.1: Loki is born
-  hard_fork{8,  0,    64324, 1533006000 /*2018-07-31 03:00 UTC*/ }, // Loki 0.2: New emissions schedule
-  hard_fork{9,  0,   101250, 1537444800 /*2018-09-20 12:00 UTC*/ }, // Loki 1: Service nodes launched
-  hard_fork{10, 0,   161849, 1544743800 /*2018-12-13 23:30 UTC*/ }, // Loki 2: Bulletproofs, gov fee batching
-  hard_fork{11, 0,   234767, 1554170400 /*2019-03-26 13:00 AEDT*/ }, // Loki 3: Infinite staking, CN-Turtle
-  hard_fork{12, 0,   321467, 1563940800 /*2019-07-24 14:00 AEDT*/ }, // Loki 4: Checkpointing, RandomXL, decommissioning, Storage Server launched
-  hard_fork{13, 0,   385824, 1571850000 /*2019-10-23 19:00 AEDT*/ }, // Loki 5: Checkpointing enforced
-  hard_fork{14, 0,   442333, 1578528000 /*2020-01-09 00:00 UTC*/ }, // Loki 6: Blink, Lokinet launched on mainnet
-  hard_fork{15, 0,   496969, 1585105200 /*2020-03-25 14:00 AEDT (03:00 UTC)*/ }, // Loki 7: ONS (Session)
-  hard_fork{16, 0,   641111, 1602464400 /*2020-10-12 12:00 AEDT (01:00 UTC)*/ }, // Loki 8: Pulse
-  hard_fork{17, 0,   770711, 1618016400 /*Saturday, April 10, 2021 1:00:00 UTC*/ },  // Oxen 8: Eliminate 6/block emissions after 180 days (not a separate release)
-  hard_fork{18, 0,   785000, 1619736143 /*Thursday, April 29, 2021 22:42:23 UTC*/ }, // Oxen 9: Timesync, new proofs, reasons, wallet ONS
-  hard_fork{18, 1,   839009, 1626217200 /*Tuesday, July 13, 2021 23:00 UTC */ }, // Oxen 9.2: mandatory SS 2.2.0 & lokinet 0.9.5 updates
+  hard_fork{7,  0,        0, 1503046577 }, // Worktips 0.1: Worktips is born
+  hard_fork{8,  0,    64324, 1533006000 /*2018-07-31 03:00 UTC*/ }, // Worktips 0.2: New emissions schedule
+  hard_fork{9,  0,   101250, 1537444800 /*2018-09-20 12:00 UTC*/ }, // Worktips 1: Service nodes launched
+  hard_fork{10, 0,   161849, 1544743800 /*2018-12-13 23:30 UTC*/ }, // Worktips 2: Bulletproofs, gov fee batching
+  hard_fork{11, 0,   234767, 1554170400 /*2019-03-26 13:00 AEDT*/ }, // Worktips 3: Infinite staking, CN-Turtle
+  hard_fork{12, 0,   321467, 1563940800 /*2019-07-24 14:00 AEDT*/ }, // Worktips 4: Checkpointing, RandomXL, decommissioning, Storage Server launched
+  hard_fork{13, 0,   385824, 1571850000 /*2019-10-23 19:00 AEDT*/ }, // Worktips 5: Checkpointing enforced
+  hard_fork{14, 0,   442333, 1578528000 /*2020-01-09 00:00 UTC*/ }, // Worktips 6: Blink, Worktipsnet launched on mainnet
+  hard_fork{15, 0,   496969, 1585105200 /*2020-03-25 14:00 AEDT (03:00 UTC)*/ }, // Worktips 7: ONS (Session)
+  hard_fork{16, 0,   641111, 1602464400 /*2020-10-12 12:00 AEDT (01:00 UTC)*/ }, // Worktips 8: Pulse
+  hard_fork{17, 0,   770711, 1618016400 /*Saturday, April 10, 2021 1:00:00 UTC*/ },  // Worktips 8: Eliminate 6/block emissions after 180 days (not a separate release)
+  hard_fork{18, 0,   785000, 1619736143 /*Thursday, April 29, 2021 22:42:23 UTC*/ }, // Worktips 9: Timesync, new proofs, reasons, wallet ONS
+  hard_fork{18, 1,   839009, 1626217200 /*Tuesday, July 13, 2021 23:00 UTC */ }, // Worktips 9.2: mandatory SS 2.2.0 & worktipsnet 0.9.5 updates
 };
 
 static constexpr std::array testnet_hard_forks =
 {
-  hard_fork{7,  0,        0, 1533631121 }, // Testnet was rebooted during Loki 3 development
+  hard_fork{7,  0,        0, 1533631121 }, // Testnet was rebooted during Worktips 3 development
   hard_fork{8,  0,        2, 1533631122 },
   hard_fork{9,  0,        3, 1533631123 },
   hard_fork{10, 0,        4, 1542681077 },

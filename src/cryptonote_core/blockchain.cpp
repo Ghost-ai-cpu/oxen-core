@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -72,8 +72,8 @@ extern "C" {
 }
 #endif
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "blockchain"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "blockchain"
 
 #define FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE (100*1024*1024) // 100 MB
 
@@ -298,7 +298,7 @@ uint64_t Blockchain::get_current_blockchain_height(bool lock) const
   return m_db->height();
 }
 //------------------------------------------------------------------
-bool Blockchain::load_missing_blocks_into_oxen_subsystems()
+bool Blockchain::load_missing_blocks_into_worktips_subsystems()
 {
   uint64_t const snl_height   = std::max(hard_fork_begins(m_nettype, network_version_9_service_nodes).value_or(0), m_service_node_list.height() + 1);
   uint64_t const ons_height   = std::max(hard_fork_begins(m_nettype, network_version_15_ons).value_or(0),          m_ons_db.height() + 1);
@@ -308,7 +308,7 @@ bool Blockchain::load_missing_blocks_into_oxen_subsystems()
   int64_t const total_blocks = static_cast<int64_t>(end_height) - static_cast<int64_t>(start_height);
   if (total_blocks <= 0) return true;
   if (total_blocks > 1)
-    MGINFO("Loading blocks into oxen subsystems, scanning blockchain from height: " << start_height << " to: " << end_height << " (snl: " << snl_height << ", ons: " << ons_height << ")");
+    MGINFO("Loading blocks into worktips subsystems, scanning blockchain from height: " << start_height << " to: " << end_height << " (snl: " << snl_height << ", ons: " << ons_height << ")");
 
   using clock                   = std::chrono::steady_clock;
   using work_time               = std::chrono::duration<float>;
@@ -347,7 +347,7 @@ bool Blockchain::load_missing_blocks_into_oxen_subsystems()
     uint64_t height = start_height + (index * BLOCK_COUNT);
     if (!get_blocks_only(height, static_cast<uint64_t>(BLOCK_COUNT), blocks))
     {
-      LOG_ERROR("Unable to get checkpointed historical blocks for updating oxen subsystems");
+      LOG_ERROR("Unable to get checkpointed historical blocks for updating worktips subsystems");
       return false;
     }
 
@@ -396,7 +396,7 @@ bool Blockchain::load_missing_blocks_into_oxen_subsystems()
   if (total_blocks > 1)
   {
     auto duration = work_time{clock::now() - scan_start};
-    MGINFO("Done recalculating oxen subsystems (" << duration.count() << "s) (snl: " << snl_duration.count() << "s; ons: " << ons_duration.count() << "s)");
+    MGINFO("Done recalculating worktips subsystems (" << duration.count() << "s) (snl: " << snl_duration.count() << "s; ons: " << ons_duration.count() << "s)");
   }
 
   if (total_blocks > 0)
@@ -429,7 +429,7 @@ bool Blockchain::init(BlockchainDB* db, sqlite3 *ons_db, const network_type nett
 
   m_db = db;
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
   // NOTE(doyle): Passing in test options in integration mode means we're
   // overriding fork heights for any nettype in our integration tests using
   // a command line argument. So m_nettype should just be nettype. In
@@ -565,9 +565,9 @@ bool Blockchain::init(BlockchainDB* db, sqlite3 *ons_db, const network_type nett
   for (InitHook* hook : m_init_hooks)
     hook->init();
 
-  if (!m_db->is_read_only() && !load_missing_blocks_into_oxen_subsystems())
+  if (!m_db->is_read_only() && !load_missing_blocks_into_worktips_subsystems())
   {
-    MFATAL("Failed to load blocks into oxen subsystems");
+    MFATAL("Failed to load blocks into worktips subsystems");
     return false;
   }
 
@@ -681,7 +681,7 @@ void Blockchain::pop_blocks(uint64_t nblocks)
   auto split_height = m_db->height();
   for (BlockchainDetachedHook* hook : m_blockchain_detached_hooks)
     hook->blockchain_detached(split_height, true /*by_pop_blocks*/);
-  load_missing_blocks_into_oxen_subsystems();
+  load_missing_blocks_into_worktips_subsystems();
 
   if (stop_batch)
     m_db->batch_stop();
@@ -999,7 +999,7 @@ bool Blockchain::rollback_blockchain_switching(const std::list<block_and_checkpo
   // Revert all changes from switching to the alt chain before adding the original chain back in
   for (BlockchainDetachedHook* hook : m_blockchain_detached_hooks)
     hook->blockchain_detached(rollback_height, false /*by_pop_blocks*/);
-  load_missing_blocks_into_oxen_subsystems();
+  load_missing_blocks_into_worktips_subsystems();
 
   //return back original chain
   for (auto& entry : original_chain)
@@ -1049,7 +1049,7 @@ bool Blockchain::switch_to_alternative_blockchain(const std::list<block_extended
 
   // pop blocks from the blockchain until the top block is the parent
   // of the front block of the alt chain.
-  std::list<block_and_checkpoint> disconnected_chain; // TODO(oxen): use a vector and rbegin(), rend() because we don't have push_front
+  std::list<block_and_checkpoint> disconnected_chain; // TODO(worktips): use a vector and rbegin(), rend() because we don't have push_front
   while (m_db->top_block_hash() != alt_chain.front().bl.prev_id)
   {
     block_and_checkpoint entry = {};
@@ -1061,7 +1061,7 @@ bool Blockchain::switch_to_alternative_blockchain(const std::list<block_extended
   auto split_height = m_db->height();
   for (BlockchainDetachedHook* hook : m_blockchain_detached_hooks)
     hook->blockchain_detached(split_height, false /*by_pop_blocks*/);
-  load_missing_blocks_into_oxen_subsystems();
+  load_missing_blocks_into_worktips_subsystems();
 
   //connecting new alternative chain
   for(auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
@@ -1296,7 +1296,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   }
 
   uint64_t height                                = cryptonote::get_block_height(b);
-  oxen_block_reward_context block_reward_context = {};
+  worktips_block_reward_context block_reward_context = {};
   block_reward_context.fee                       = fee;
   block_reward_context.height                    = height;
   block_reward_context.testnet_override          = nettype() == TESTNET && height < 386000;
@@ -1308,7 +1308,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
 
   block_reward_parts reward_parts;
 
-  if (!get_oxen_block_reward(median_weight, cumulative_block_weight, already_generated_coins, version, reward_parts, block_reward_context))
+  if (!get_worktips_block_reward(median_weight, cumulative_block_weight, already_generated_coins, version, reward_parts, block_reward_context))
   {
     MERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
@@ -1347,7 +1347,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   }
 
   // +1 here to allow a 1 atomic unit error in the calculation (which can happen because of floating point errors or rounding)
-  // TODO(oxen): eliminate all floating point math in reward calculations.
+  // TODO(worktips): eliminate all floating point math in reward calculations.
   uint64_t max_base_reward = reward_parts.base_miner + reward_parts.governance_paid + reward_parts.service_node_total + 1;
   uint64_t max_money_in_use = max_base_reward + reward_parts.miner_fee;
   if (money_in_use > max_money_in_use)
@@ -1569,8 +1569,8 @@ bool Blockchain::create_block_template_internal(block& b, const crypto::hash *fr
   uint8_t hf_version = b.major_version;
   auto miner_tx_context =
       info.is_miner
-          ? oxen_miner_tx_context::miner_block(m_nettype, info.miner_address, m_service_node_list.get_block_leader())
-          : oxen_miner_tx_context::pulse_block(m_nettype, info.service_node_payout, m_service_node_list.get_block_leader());
+          ? worktips_miner_tx_context::miner_block(m_nettype, info.miner_address, m_service_node_list.get_block_leader())
+          : worktips_miner_tx_context::pulse_block(m_nettype, info.service_node_payout, m_service_node_list.get_block_leader());
   if (!calc_batched_governance_reward(height, miner_tx_context.batched_governance))
   {
     LOG_ERROR("Failed to calculate batched governance reward");
@@ -2434,7 +2434,7 @@ void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint
 //------------------------------------------------------------------
 bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const
 {
-  // rct outputs don't exist before v4, NOTE(oxen): we started from v7 so our start is always 0
+  // rct outputs don't exist before v4, NOTE(worktips): we started from v7 so our start is always 0
   start_height = 0;
   base = 0;
 
@@ -3013,12 +3013,12 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   std::unique_lock lock{*this};
 
   for (const auto &o: tx.vout) {
-    if (o.amount != 0) { // in a v2 tx, all outputs must have 0 amount NOTE(oxen): All oxen tx's are atleast v2 from the beginning
+    if (o.amount != 0) { // in a v2 tx, all outputs must have 0 amount NOTE(worktips): All worktips tx's are atleast v2 from the beginning
       tvc.m_invalid_output = true;
       return false;
     }
 
-    // from hardfork v4, forbid invalid pubkeys NOTE(oxen): We started from hf7 so always execute branch
+    // from hardfork v4, forbid invalid pubkeys NOTE(worktips): We started from hf7 so always execute branch
     if (auto* out_to_key = std::get_if<txout_to_key>(&o.target); out_to_key && !crypto::check_key(out_to_key->key)) {
       tvc.m_invalid_output = true;
       return false;
@@ -3231,7 +3231,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   if (tx.is_transfer())
   {
-    if (tx.type != txtype::oxen_name_system && hf_version >= HF_VERSION_MIN_2_OUTPUTS && tx.vout.size() < 2)
+    if (tx.type != txtype::worktips_name_system && hf_version >= HF_VERSION_MIN_2_OUTPUTS && tx.vout.size() < 2)
     {
       MERROR_VER("Tx " << get_transaction_hash(tx) << " has fewer than two outputs, which is not allowed as of hardfork " << +HF_VERSION_MIN_2_OUTPUTS);
       tvc.m_too_few_outputs = true;
@@ -3494,9 +3494,9 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       }
     }
 
-    if (tx.type == txtype::oxen_name_system)
+    if (tx.type == txtype::worktips_name_system)
     {
-      cryptonote::tx_extra_oxen_name_system data;
+      cryptonote::tx_extra_worktips_name_system data;
       std::string fail_reason;
       if (!m_ons_db.validate_ons_tx(hf_version, get_current_blockchain_height(), tx, data, &fail_reason))
       {
@@ -3964,7 +3964,7 @@ Blockchain::block_pow_verified Blockchain::verify_block_pow(cryptonote::block co
   crypto::hash const blk_hash = cryptonote::get_block_hash(blk);
   uint64_t const blk_height   = cryptonote::get_block_height(blk);
 
-  // There is a difficulty bug in oxend that caused a network disagreement at height 526483 where
+  // There is a difficulty bug in worktipsd that caused a network disagreement at height 526483 where
   // somewhere around half the network had a slightly-too-high difficulty value and accepted the
   // block while nodes with the correct difficulty value rejected it.  However this not-quite-enough
   // difficulty chain had enough of the network following it that it got checkpointed several times
@@ -4386,14 +4386,14 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
     MGINFO_RED("Blocks that failed verification should not reach here");
   }
 
-  auto abort_block = oxen::defer([&]() {
+  auto abort_block = worktips::defer([&]() {
       pop_block_from_blockchain();
       auto old_height = m_db->height();
       for (BlockchainDetachedHook* hook : m_blockchain_detached_hooks)
         hook->blockchain_detached(old_height, false /*by_pop_blocks*/);
   });
 
-  // TODO(oxen): Not nice, making the hook take in a vector of pair<transaction,
+  // TODO(worktips): Not nice, making the hook take in a vector of pair<transaction,
   // blobdata> messes with service_node_list::init which only constructs
   // a vector of transactions and then subsequently calls block_added, so the
   // init step would have to intentionally allocate the blobs or retrieve them

@@ -28,15 +28,15 @@
 //
 #if defined(HAVE_HIDAPI) 
 
-#include "common/oxen.h"
+#include "common/worktips.h"
 #include "log.hpp"
 #include "device_io_hid.hpp"
 
 namespace hw {
   namespace io {
  
-    #undef OXEN_DEFAULT_LOG_CATEGORY
-    #define OXEN_DEFAULT_LOG_CATEGORY "device.io"
+    #undef WORKTIPS_DEFAULT_LOG_CATEGORY
+    #define WORKTIPS_DEFAULT_LOG_CATEGORY "device.io"
  
     #define ASSERT_X(exp,msg)    CHECK_AND_ASSERT_THROW_MES(exp, msg); 
 
@@ -84,7 +84,7 @@ namespace hw {
 
     void device_io_hid::io_hid_log(int read, unsigned char* buffer, int block_len) {
       if (hid_verbose)
-        MDEBUG("HID " << (read ? '<' : '>') << " : " << oxenmq::to_hex(buffer, buffer + block_len));
+        MDEBUG("HID " << (read ? '<' : '>') << " : " << worktipsmq::to_hex(buffer, buffer + block_len));
     }
  
     void device_io_hid::init() {
@@ -120,7 +120,7 @@ namespace hw {
 
       hid_device_info *result = nullptr;
       for (; devices_list != nullptr; devices_list = devices_list->next) {
-        OXEN_DEFER {
+        WORKTIPS_DEFER {
           MDEBUG( (result == devices_list ? "SELECTED" : "SKIPPED ") <<
                   " HID Device" <<
                   " path " << safe_hid_path(devices_list) <<

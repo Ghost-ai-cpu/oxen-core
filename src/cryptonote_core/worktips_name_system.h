@@ -1,12 +1,12 @@
-#ifndef OXEN_NAME_SYSTEM_H
-#define OXEN_NAME_SYSTEM_H
+#ifndef WORKTIPS_NAME_SYSTEM_H
+#define WORKTIPS_NAME_SYSTEM_H
 
 #include "crypto/crypto.h"
 #include "cryptonote_config.h"
 #include "epee/span.h"
 #include "cryptonote_basic/tx_extra.h"
 #include "common/fs.h"
-#include <oxenmq/hex.h>
+#include <worktipsmq/hex.h>
 
 #include <cassert>
 #include <string>
@@ -20,7 +20,7 @@ struct block;
 struct address_parse_info;
 class transaction;
 struct account_address;
-struct tx_extra_oxen_name_system;
+struct tx_extra_worktips_name_system;
 class Blockchain;
 }; // namespace cryptonote
 
@@ -30,9 +30,9 @@ namespace ons
 constexpr size_t WALLET_NAME_MAX                  = 64;
 constexpr size_t WALLET_ACCOUNT_BINARY_LENGTH_INC_PAYMENT_ID     = 73;  // Wallet will encrypt an identifier (1 byte) a public spend and view key (2x 32 bytes) = 65 bytes plus an additional item for payment id (8 bytes) if necessary. The identifier 0 -> No Subaddress or Payment ID, 1 -> Has Subaddress, 2-> Has Payment ID
 constexpr size_t WALLET_ACCOUNT_BINARY_LENGTH_NO_PAYMENT_ID     = 65;
-constexpr size_t LOKINET_DOMAIN_NAME_MAX          = 63 + 5; // DNS components name must be at most 63 (+ 5 for .loki); this limit applies if there is at least one hyphen (and thus includes punycode)
-constexpr size_t LOKINET_DOMAIN_NAME_MAX_NOHYPHEN = 32 + 5; // If the name does not contain a - then we restrict it to 32 characters so that it cannot be (and is obviously not) an encoded .loki address (52 characters)
-constexpr size_t LOKINET_ADDRESS_BINARY_LENGTH    = sizeof(crypto::ed25519_public_key);
+constexpr size_t WORKTIPSNET_DOMAIN_NAME_MAX          = 63 + 5; // DNS components name must be at most 63 (+ 5 for .worktips); this limit applies if there is at least one hyphen (and thus includes punycode)
+constexpr size_t WORKTIPSNET_DOMAIN_NAME_MAX_NOHYPHEN = 32 + 5; // If the name does not contain a - then we restrict it to 32 characters so that it cannot be (and is obviously not) an encoded .worktips address (52 characters)
+constexpr size_t WORKTIPSNET_ADDRESS_BINARY_LENGTH    = sizeof(crypto::ed25519_public_key);
 constexpr size_t SESSION_DISPLAY_NAME_MAX         = 64;
 constexpr size_t SESSION_PUBLIC_KEY_BINARY_LENGTH = 1 + sizeof(crypto::ed25519_public_key); // Session keys at prefixed with 0x05 + ed25519 key
 
@@ -48,7 +48,7 @@ constexpr char ONS_WALLET_TYPE_INTEGRATED = 0x02;
 
 struct mapping_value
 {
-  static size_t constexpr BUFFER_SIZE = std::max({WALLET_ACCOUNT_BINARY_LENGTH_INC_PAYMENT_ID, LOKINET_ADDRESS_BINARY_LENGTH, SESSION_PUBLIC_KEY_BINARY_LENGTH}) + SODIUM_ENCRYPTION_EXTRA_BYTES;
+  static size_t constexpr BUFFER_SIZE = std::max({WALLET_ACCOUNT_BINARY_LENGTH_INC_PAYMENT_ID, WORKTIPSNET_ADDRESS_BINARY_LENGTH, SESSION_PUBLIC_KEY_BINARY_LENGTH}) + SODIUM_ENCRYPTION_EXTRA_BYTES;
   std::array<uint8_t, BUFFER_SIZE> buffer;
   bool encrypted;
   size_t len;
@@ -104,7 +104,7 @@ struct mapping_value
 
   // Validate a human readable mapping value representation in 'value' and write the binary form into 'blob'.
   // value: if type is session, 66 character hex string of an ed25519 public key (with 05 prefix)
-  //                   lokinet, 52 character base32z string of an ed25519 public key
+  //                   worktipsnet, 52 character base32z string of an ed25519 public key
   //                   wallet,  the wallet public address string
   // blob: (optional) if function returns true, validate will load the binary data into blob (ready for encryption via encrypt())
   static bool validate(cryptonote::network_type nettype, mapping_type type, std::string_view value, mapping_value *blob = nullptr, std::string *reason = nullptr);
@@ -115,16 +115,16 @@ struct mapping_value
   mapping_value();
   mapping_value(std::string encrypted_value, std::string nonce);
 };
-inline std::ostream &operator<<(std::ostream &os, mapping_value const &v) { return os << oxenmq::to_hex(v.to_view()); }
+inline std::ostream &operator<<(std::ostream &os, mapping_value const &v) { return os << worktipsmq::to_hex(v.to_view()); }
 
 inline std::string_view mapping_type_str(mapping_type type)
 {
   switch(type)
   {
-    case mapping_type::lokinet:         return "lokinet"sv; // general type stored in the database; 1 year when in a purchase tx
-    case mapping_type::lokinet_2years:  return "lokinet_2years"sv;  // Only used in a buy tx, not in the DB
-    case mapping_type::lokinet_5years:  return "lokinet_5years"sv;  // "
-    case mapping_type::lokinet_10years: return "lokinet_10years"sv; // "
+    case mapping_type::worktipsnet:         return "worktipsnet"sv; // general type stored in the database; 1 year when in a purchase tx
+    case mapping_type::worktipsnet_2years:  return "worktipsnet_2years"sv;  // Only used in a buy tx, not in the DB
+    case mapping_type::worktipsnet_5years:  return "worktipsnet_5years"sv;  // "
+    case mapping_type::worktipsnet_10years: return "worktipsnet_10years"sv; // "
     case mapping_type::session:         return "session"sv;
     case mapping_type::wallet:          return "wallet"sv;
     default: assert(false);             return "xx_unhandled_type"sv;
@@ -134,23 +134,23 @@ inline std::ostream &operator<<(std::ostream &os, mapping_type type) { return os
 
 constexpr bool mapping_type_allowed(uint8_t hf_version, mapping_type type) {
   return (type == mapping_type::session && hf_version >= cryptonote::network_version_15_ons)
-      || (is_lokinet_type(type) && hf_version >= cryptonote::network_version_16_pulse)
+      || (is_worktipsnet_type(type) && hf_version >= cryptonote::network_version_16_pulse)
       || (type == mapping_type::wallet && hf_version >= cryptonote::network_version_18);
 }
 
 // Returns all mapping types supported for lookup as of the given hardfork.  (Note that this does
-// not return the dedicated length types such as mapping_type::lokinet_5years as those are only
+// not return the dedicated length types such as mapping_type::worktipsnet_5years as those are only
 // relevant within a ONS buy tx).
 std::vector<mapping_type> all_mapping_types(uint8_t hf_version);
 
-sqlite3 *init_oxen_name_system(const fs::path& file_path, bool read_only);
+sqlite3 *init_worktips_name_system(const fs::path& file_path, bool read_only);
 
 /// Returns the integer value used in the database and in RPC lookup calls for the given mapping
-/// type.  In particularly this maps all mapping_type::lokinet_Xyears values to the underlying value
-/// of mapping_type::lokinet.
+/// type.  In particularly this maps all mapping_type::worktipsnet_Xyears values to the underlying value
+/// of mapping_type::worktipsnet.
 constexpr uint16_t db_mapping_type(ons::mapping_type type) {
-  if (is_lokinet_type(type))
-    return static_cast<uint16_t>(mapping_type::lokinet);
+  if (is_worktipsnet_type(type))
+    return static_cast<uint16_t>(mapping_type::worktipsnet);
   return static_cast<uint16_t>(type);
 }
 
@@ -184,7 +184,7 @@ std::string        tx_extra_signature(std::string_view value, generic_owner cons
 
 enum struct ons_tx_type { lookup, buy, update, renew };
 // Converts a human readable case-insensitive string denoting the mapping type into a value suitable for storing into the ONS DB.
-// Currently accepts "session" or "lokinet" for lookups, buys, updates, and renewals; for buys and renewals also accepts "lokinet_Ny[ear]" for N=2,5,10
+// Currently accepts "session" or "worktipsnet" for lookups, buys, updates, and renewals; for buys and renewals also accepts "worktipsnet_Ny[ear]" for N=2,5,10
 // Lookups are implied by none of buy/update/renew.
 // mapping_type: (optional) if function returns true, the uint16_t value of the 'type' will be set
 bool         validate_mapping_type(std::string_view type, uint8_t hf_version, ons_tx_type txtype, mapping_type *mapping_type, std::string *reason);
@@ -286,7 +286,7 @@ struct name_system_db
   // Signifies the blockchain has reorganized commences the rollback and pruning procedures.
   void                        block_detach   (cryptonote::Blockchain const &blockchain, uint64_t new_blockchain_height);
   bool                        save_owner     (generic_owner const &owner, int64_t *row_id);
-  bool                        save_mapping   (crypto::hash const &tx_hash, cryptonote::tx_extra_oxen_name_system const &src, uint64_t height, std::optional<uint64_t> expiration_height, int64_t owner_id, std::optional<int64_t> backup_owner_id);
+  bool                        save_mapping   (crypto::hash const &tx_hash, cryptonote::tx_extra_worktips_name_system const &src, uint64_t height, std::optional<uint64_t> expiration_height, int64_t owner_id, std::optional<int64_t> backup_owner_id);
   bool                        save_settings  (uint64_t top_height, crypto::hash const &top_hash, int version);
 
   // Delete all mappings that are registered on height or newer followed by deleting all owners no longer referenced in the DB
@@ -314,7 +314,7 @@ struct name_system_db
 
   // Validates an ONS transaction.  If the function returns true then entry will be populated with
   // the ONS details.  On a false return, `reason` is instead populated with the failure reason.
-  bool validate_ons_tx(uint8_t hf_version, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_oxen_name_system &entry, std::string *reason);
+  bool validate_ons_tx(uint8_t hf_version, uint64_t blockchain_height, cryptonote::transaction const &tx, cryptonote::tx_extra_worktips_name_system &entry, std::string *reason);
 
   // Destructor; closes the sqlite3 database if one is open
   ~name_system_db();
@@ -341,4 +341,4 @@ private:
 };
 
 }; // namespace service_nodes
-#endif // OXEN_NAME_SYSTEM_H
+#endif // WORKTIPS_NAME_SYSTEM_H

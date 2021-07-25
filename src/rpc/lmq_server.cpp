@@ -1,13 +1,13 @@
 
 #include "lmq_server.h"
-#include "oxenmq/oxenmq.h"
+#include "worktipsmq/worktipsmq.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon.rpc"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
 namespace cryptonote { namespace rpc {
 
-using oxenmq::AuthLevel;
+using worktipsmq::AuthLevel;
 
 namespace {
 
@@ -16,18 +16,18 @@ namespace {
 
 const command_line::arg_descriptor<std::vector<std::string>> arg_omq_public{
   "lmq-public",
-  "Adds a public, unencrypted OxenMQ RPC listener (with restricted capabilities) at the given "
+  "Adds a public, unencrypted WorktipsMQ RPC listener (with restricted capabilities) at the given "
     "address; can be specified multiple times. Examples: tcp://0.0.0.0:5555 (listen on port 5555), "
     "tcp://198.51.100.42:5555 (port 5555 on specific IPv4 address), tcp://[::]:5555, "
     "tcp://[2001:db8::abc]:5555 (IPv6), or ipc:///path/to/socket to listen on a unix domain socket"};
 const command_line::arg_descriptor<std::vector<std::string>> arg_omq_curve_public{
   "lmq-curve-public",
-  "Adds a curve-encrypted OxenMQ RPC listener at the given address that accepts (restricted) rpc "
+  "Adds a curve-encrypted WorktipsMQ RPC listener at the given address that accepts (restricted) rpc "
     "commands from any client. Clients must already know this server's public x25519 key to "
     "establish an encrypted connection."};
 const command_line::arg_descriptor<std::vector<std::string>> arg_omq_curve{
   "lmq-curve",
-  "Adds a curve-encrypted OxenMQ RPC listener at the given address that only accepts client connections from whitelisted client x25519 pubkeys. "
+  "Adds a curve-encrypted WorktipsMQ RPC listener at the given address that only accepts client connections from whitelisted client x25519 pubkeys. "
     "Clients must already know this server's public x25519 key to establish an encrypted connection. When running in service node mode "
     "the quorumnet port is already listening as if specified with --lmq-curve."};
 const command_line::arg_descriptor<std::vector<std::string>> arg_omq_admin{
@@ -38,9 +38,9 @@ const command_line::arg_descriptor<std::vector<std::string>> arg_omq_user{
   "Specifies an x25519 pubkey of a client permitted to connect to the --lmq-curve or quorumnet address(es) with restricted capabilities"};
 const command_line::arg_descriptor<std::vector<std::string>> arg_omq_local_control{
   "lmq-local-control",
-  "Adds an unencrypted OxenMQ RPC listener with full, unrestricted capabilities and no authentication at the given address. "
+  "Adds an unencrypted WorktipsMQ RPC listener with full, unrestricted capabilities and no authentication at the given address. "
 #ifndef _WIN32
-    "Listens at ipc://<data-dir>/oxend.sock if not specified. Specify 'none' to disable the default. "
+    "Listens at ipc://<data-dir>/worktipsd.sock if not specified. Specify 'none' to disable the default. "
 #endif
     "WARNING: Do not use this on a publicly accessible address!"};
 
@@ -64,10 +64,10 @@ auto as_x_pubkeys(const std::vector<std::string>& pk_strings) {
   std::vector<crypto::x25519_public_key> pks;
   pks.reserve(pk_strings.size());
   for (const auto& pkstr : pk_strings) {
-    if (pkstr.size() != 64 || !oxenmq::is_hex(pkstr))
+    if (pkstr.size() != 64 || !worktipsmq::is_hex(pkstr))
       throw std::runtime_error("Invalid LMQ login pubkey: '" + pkstr + "'; expected 64-char hex pubkey");
     pks.emplace_back();
-    oxenmq::to_hex(pkstr.begin(), pkstr.end(), reinterpret_cast<char *>(&pks.back()));
+    worktipsmq::to_hex(pkstr.begin(), pkstr.end(), reinterpret_cast<char *>(&pks.back()));
   }
   return pks;
 }
@@ -131,11 +131,11 @@ omq_rpc::omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::prog
     // windows.  In theory we could do some runtime detection to see if the Windows version is new
     // enough to support unix domain sockets, but for now the Windows default is just "don't listen"
 #ifndef _WIN32
-    // Push default .oxen/oxend.sock
+    // Push default .worktips/worktipsd.sock
     locals.push_back("ipc://" + core.get_config_directory().u8string() + "/" + CRYPTONOTE_NAME + "d.sock");
-    // Pushing old default lokid.sock onto the list. A symlink from .loki -> .oxen so the user should be able
-    // to communicate via the old .loki/lokid.sock
-    locals.push_back("ipc://" + core.get_config_directory().u8string() + "/lokid.sock");
+    // Pushing old default worktipsd.sock onto the list. A symlink from .worktips -> .worktips so the user should be able
+    // to communicate via the old .worktips/worktipsd.sock
+    locals.push_back("ipc://" + core.get_config_directory().u8string() + "/worktipsd.sock");
 #endif
   } else if (locals.size() == 1 && locals[0] == "none") {
     locals.clear();
@@ -188,7 +188,7 @@ omq_rpc::omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::prog
   omq.add_category("admin", AuthLevel::admin, admin_reserved_threads);
   for (auto& cmd : rpc_commands) {
     omq.add_request_command(cmd.second->is_public ? "rpc" : "admin", cmd.first,
-        [name=std::string_view{cmd.first}, &call=*cmd.second, this](oxenmq::Message& m) {
+        [name=std::string_view{cmd.first}, &call=*cmd.second, this](worktipsmq::Message& m) {
       if (m.data.size() > 1)
         m.send_reply(LMQ_BAD_REQUEST, "Bad request: RPC commands must have at most one data part "
             "(received " + std::to_string(m.data.size()) + ")");
@@ -253,7 +253,7 @@ omq_rpc::omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::prog
   // such as txes that came from an existing block during a rollback).  Note that both txhash and
   // txblob are binary: in particular, txhash is *not* hex-encoded.
   //
-  omq.add_request_command("sub", "mempool", [this](oxenmq::Message& m) {
+  omq.add_request_command("sub", "mempool", [this](worktipsmq::Message& m) {
 
     if (m.data.size() != 1) {
       m.send_reply("Invalid subscription request: no subscription type given");
@@ -299,7 +299,7 @@ omq_rpc::omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::prog
   // The block notification for new blocks consists of a message [notify.block, height, blockhash]
   // containing the latest height/hash.  (Note that blockhash is the hash in bytes, *not* the hex
   // encoded block hash).
-  omq.add_request_command("sub", "block", [this](oxenmq::Message& m) {
+  omq.add_request_command("sub", "block", [this](worktipsmq::Message& m) {
       std::unique_lock lock{subs_mutex_};
     auto expiry = std::chrono::steady_clock::now() + 30min;
     auto result = block_subs_.emplace(m.conn, block_sub{expiry});
@@ -321,7 +321,7 @@ omq_rpc::omq_rpc(cryptonote::core& core, core_rpc_server& rpc, const boost::prog
 
 template <typename Mutex, typename Subs, typename Call>
 static void send_notifies(Mutex& mutex, Subs& subs, const char* desc, Call call) {
-  std::vector<oxenmq::ConnectionID> remove;
+  std::vector<worktipsmq::ConnectionID> remove;
   {
     std::shared_lock lock{mutex};
 

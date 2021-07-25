@@ -1,4 +1,4 @@
-// Copyright (c) 2018, The Loki Project
+// Copyright (c) 2018, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -52,8 +52,8 @@
 #include <gnu/libc-version.h>
 #endif
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "util"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "util"
 
 namespace tools
 {
@@ -62,10 +62,10 @@ namespace tools
   {
     ub_ctx *ctx = ub_ctx_create();
     if (!ctx) return false; // cheat a bit, should not happen unless OOM
-    char *oxen = strdup("oxen"), *unbound = strdup("unbound");
-    ub_ctx_zone_add(ctx, oxen, unbound); // this calls ub_ctx_finalize first, then errors out with UB_SYNTAX
+    char *worktips = strdup("worktips"), *unbound = strdup("unbound");
+    ub_ctx_zone_add(ctx, worktips, unbound); // this calls ub_ctx_finalize first, then errors out with UB_SYNTAX
     free(unbound);
-    free(oxen);
+    free(worktips);
     // if no threads, bails out early with UB_NOERROR, otherwise fails with UB_AFTERFINAL id already finalized
     bool with_threads = ub_ctx_async(ctx, 1) != 0; // UB_AFTERFINAL is not defined in public headers, check any error
     ub_ctx_delete(ctx);
@@ -273,7 +273,7 @@ namespace tools
     // Devnet blocks
     return num_blocks;
 
-    // TODO(oxen):
+    // TODO(worktips):
 #if 0
     // The following is a table of average blocks sizes in bytes over the Monero mainnet
     // blockchain, where the block size is averaged over ranges of 10,000 blocks

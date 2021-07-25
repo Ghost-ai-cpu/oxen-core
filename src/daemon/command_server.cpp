@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c) 2018-2020, The Worktips Project
 // Copyright (c) 2014-2019, The Monero Project
 // 
 // All rights reserved.
@@ -33,14 +33,14 @@
 #include "epee/string_tools.h"
 #include "daemon/command_server.h"
 
-#include "common/oxen_integration_test_hooks.h"
+#include "common/worktips_integration_test_hooks.h"
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
 #include <thread>
 #endif
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize {
 
@@ -315,7 +315,7 @@ void command_server::init_commands(cryptonote::rpc::core_rpc_server* rpc_server)
     , "bc_dyn_stats <last_block_count>"
     , "Print the information about current blockchain dynamic state."
     );
-    // TODO(oxen): Implement
+    // TODO(worktips): Implement
 #if 0
     m_command_lookup.set_handler(
       "update"
@@ -346,7 +346,7 @@ void command_server::init_commands(cryptonote::rpc::core_rpc_server* rpc_server)
     , [this](const auto &x) { return m_parser.version(x); }
     , "Print version information."
     );
-#if 0 // TODO(oxen): Pruning not supported because of Service Node List
+#if 0 // TODO(worktips): Pruning not supported because of Service Node List
     m_command_lookup.set_handler(
       "prune_blockchain"
     , [this](const auto &x) { return m_parser.prune_blockchain(x); }
@@ -391,7 +391,7 @@ void command_server::init_commands(cryptonote::rpc::core_rpc_server* rpc_server)
         },
     "");
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
     m_command_lookup.set_handler(
       "relay_votes_and_uptime", [rpc_server](const auto&) {
         rpc_server->on_relay_uptime_and_votes();
@@ -453,7 +453,7 @@ bool command_server::start_handling(std::function<void(void)> exit_handler)
 {
   if (m_is_rpc) return false;
 
-#if defined(OXEN_ENABLE_INTEGRATION_TEST_HOOKS)
+#if defined(WORKTIPS_ENABLE_INTEGRATION_TEST_HOOKS)
   auto handle_pipe = [&]()
   {
     // TODO(doyle): Hack, don't hook into input until the daemon has completely initialised, i.e. you can print the status
@@ -511,7 +511,7 @@ bool command_server::help(const std::vector<std::string>& args)
 std::string command_server::get_commands_str()
 {
   std::stringstream ss;
-  ss << "Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")" << std::endl;
+  ss << "Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")" << std::endl;
   ss << "Commands:\n";
   m_command_lookup.for_each([&ss] (const std::string&, const std::string& usage, const std::string&) {
       ss << "  " << usage << "\n"; });

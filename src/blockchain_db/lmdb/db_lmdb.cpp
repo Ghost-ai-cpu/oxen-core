@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c) 2018-2019, The Loki Project
+// Copyright (c) 2018-2019, The Worktips Project
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -51,8 +51,8 @@
 #include "cryptonote_core/service_node_list.h"
 #include "cryptonote_core/uptime_proof.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"
 
 
 using namespace crypto;
@@ -1585,7 +1585,7 @@ void BlockchainLMDB::open(const fs::path& filename, cryptonote::network_type net
       if (mdb_flags & MDB_RDONLY)
       {
         MFATAL("Existing lmdb database needs to be converted, which cannot be done on a read-only database.");
-        MFATAL("Please run oxend once to convert the database.");
+        MFATAL("Please run worktipsd once to convert the database.");
         failed = true;
       }
       else
@@ -6242,7 +6242,7 @@ struct service_node_proof_serialized_old
     info.proof->qnet_port = little_to_native(quorumnet_port);
     info.proof->version = little_to_native_container(version);
     info.proof->storage_server_version = {0, 0, 0};
-    info.proof->lokinet_version = {0, 0, 0};
+    info.proof->worktipsnet_version = {0, 0, 0};
     info.update_pubkey(pubkey_ed25519);
   }
 
@@ -6268,17 +6268,17 @@ struct service_node_proof_serialized : service_node_proof_serialized_old {
   service_node_proof_serialized(const service_nodes::proof_info &info)
     : service_node_proof_serialized_old{info},
       storage_server_version{native_to_little_container(info.proof->storage_server_version)},
-      lokinet_version{native_to_little_container(info.proof->lokinet_version)}
+      worktipsnet_version{native_to_little_container(info.proof->worktipsnet_version)}
   {}
   std::array<uint16_t, 3> storage_server_version;
-  std::array<uint16_t, 3> lokinet_version;
+  std::array<uint16_t, 3> worktipsnet_version;
   char _padding[4];
 
   void update(service_nodes::proof_info& info) const {
     if (!info.proof) info.proof = std::unique_ptr<uptime_proof::Proof>(new uptime_proof::Proof());
     service_node_proof_serialized_old::update(info);
     info.proof->storage_server_version = little_to_native_container(storage_server_version);
-    info.proof->lokinet_version = little_to_native_container(lokinet_version);
+    info.proof->worktipsnet_version = little_to_native_container(worktipsnet_version);
   }
 
   operator service_nodes::proof_info() const

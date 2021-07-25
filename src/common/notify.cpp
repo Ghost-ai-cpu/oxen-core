@@ -32,8 +32,8 @@
 #include "spawn.h"
 #include "notify.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "notify"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "notify"
 
 namespace tools
 {

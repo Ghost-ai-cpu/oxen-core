@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <oxenmq/variant.h>
+#include <worktipsmq/variant.h>
 #include <array>
 #include <typeinfo>
 #ifdef __GNUG__

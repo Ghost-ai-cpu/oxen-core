@@ -2,7 +2,7 @@
 
 #include "service_node_list.h"
 #include "../cryptonote_protocol/cryptonote_protocol_defs.h"
-#include <oxenmq/bt_serialize.h>
+#include <worktipsmq/bt_serialize.h>
 
 namespace uptime_proof
 {
@@ -13,7 +13,7 @@ class Proof
 public:
   std::array<uint16_t, 3> version;
   std::array<uint16_t, 3> storage_server_version;
-  std::array<uint16_t, 3> lokinet_version;
+  std::array<uint16_t, 3> worktipsnet_version;
 
   uint64_t timestamp;
   crypto::public_key pubkey;
@@ -26,10 +26,10 @@ public:
   uint16_t qnet_port;
 
   Proof() = default;
-  Proof(uint32_t sn_public_ip, uint16_t sn_storage_https_port, uint16_t sn_storage_omq_port, std::array<uint16_t, 3> ss_version, uint16_t quorumnet_port, std::array<uint16_t, 3> lokinet_version, const service_nodes::service_node_keys& keys);
+  Proof(uint32_t sn_public_ip, uint16_t sn_storage_https_port, uint16_t sn_storage_omq_port, std::array<uint16_t, 3> ss_version, uint16_t quorumnet_port, std::array<uint16_t, 3> worktipsnet_version, const service_nodes::service_node_keys& keys);
 
   Proof(const std::string& serialized_proof);
-  oxenmq::bt_dict bt_encode_uptime_proof() const;
+  worktipsmq::bt_dict bt_encode_uptime_proof() const;
 
   crypto::hash hash_uptime_proof() const;
 

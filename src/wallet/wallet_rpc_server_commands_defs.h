@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -37,10 +37,10 @@
 #include "wallet/transfer_view.h"
 
 #include "common/meta.h"
-#include "common/oxen.h"
+#include "common/worktips.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "wallet.rpc"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "wallet.rpc"
 
 // When making *any* change here, bump minor
 // If the change is incompatible, then bump major and set minor to 0
@@ -86,7 +86,7 @@ namespace tools::wallet_rpc {
   }
 
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Return the wallet's balance.
   struct GET_BALANCE : RPC_COMMAND
   {
@@ -108,7 +108,7 @@ namespace tools::wallet_rpc {
       uint32_t address_index;       // Index of the subaddress in the account.
       std::string address;          // Address at this index. Base58 representation of the public keys.
       uint64_t balance;             // Balance for the subaddress (locked or unlocked).
-      uint64_t unlocked_balance;    // Unlocked funds are those funds that are sufficiently deep enough in the oxen blockchain to be considered safe to spend.
+      uint64_t unlocked_balance;    // Unlocked funds are those funds that are sufficiently deep enough in the worktips blockchain to be considered safe to spend.
       std::string label;            // Label for the subaddress.
       uint64_t num_unspent_outputs; // Number of unspent outputs available for the subaddress.
       uint64_t blocks_to_unlock;    // The number of blocks remaining for the balance to unlock
@@ -120,7 +120,7 @@ namespace tools::wallet_rpc {
     struct response
     {
       uint64_t   balance;                              // The total balance (atomic units) of the currently opened wallet.
-      uint64_t   unlocked_balance;                     // Unlocked funds are those funds that are sufficiently deep enough in the oxen blockchain to be considered safe to spend.
+      uint64_t   unlocked_balance;                     // Unlocked funds are those funds that are sufficiently deep enough in the worktips blockchain to be considered safe to spend.
       bool       multisig_import_needed;               // True if importing multisig data is needed for returning a correct balance.
       std::vector<per_subaddress_info> per_subaddress; // Balance information for each subaddress in an account.
       uint64_t blocks_to_unlock;                       // The number of blocks remaining for the balance to unlock
@@ -130,7 +130,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Return the wallet's addresses for an account. Optionally filter for specific set of subaddresses.
   struct GET_ADDRESS : RPC_COMMAND
   {
@@ -163,7 +163,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get account and address indexes from a specific (sub)address.
   struct GET_ADDRESS_INDEX : RPC_COMMAND
   {
@@ -184,7 +184,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Create a new address for an account. Optionally, label the new address.
   struct CREATE_ADDRESS : RPC_COMMAND
   {
@@ -210,7 +210,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Label an address.
   struct LABEL_ADDRESS : RPC_COMMAND
   {
@@ -227,7 +227,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get all accounts for a wallet. Optionally filter accounts by tag.
   struct GET_ACCOUNTS : RPC_COMMAND
   {
@@ -263,7 +263,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Create a new account with an optional label.
   struct CREATE_ACCOUNT : RPC_COMMAND
   {
@@ -285,7 +285,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Label an account.
   struct LABEL_ACCOUNT : RPC_COMMAND
   {
@@ -302,7 +302,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get a list of user-defined account tags.
   struct GET_ACCOUNT_TAGS : RPC_COMMAND
   {
@@ -327,7 +327,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Apply a filtering tag to a list of accounts.
   struct TAG_ACCOUNTS : RPC_COMMAND
   {
@@ -344,7 +344,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Remove filtering tag from a list of accounts.
   struct UNTAG_ACCOUNTS : RPC_COMMAND
   {
@@ -360,7 +360,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Set description for an account tag.
   struct SET_ACCOUNT_TAG_DESCRIPTION : RPC_COMMAND
   {
@@ -377,7 +377,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Returns the wallet's current block height and blockchain immutable height
   struct GET_HEIGHT : RPC_COMMAND
   {
@@ -394,8 +394,8 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Send oxen to a number of recipients. To preview the transaction fee, set do_not_relay to true and get_tx_metadata to true.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Send worktips to a number of recipients. To preview the transaction fee, set do_not_relay to true and get_tx_metadata to true.
   // Submit the response using the data in get_tx_metadata in the RPC call, relay_tx.
   struct TRANSFER : RESTRICTED
   {
@@ -403,14 +403,14 @@ namespace tools::wallet_rpc {
 
     struct request
     {
-      std::list<wallet::transfer_destination> destinations; // Array of destinations to receive OXEN.
+      std::list<wallet::transfer_destination> destinations; // Array of destinations to receive WORKTIPS.
       uint32_t account_index;                       // (Optional) Transfer from this account index. (Defaults to 0)
       std::set<uint32_t> subaddr_indices;           // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       uint32_t priority;                            // Set a priority for the transaction. Accepted values are: 1 for unimportant or 5 for blink. (0 and 2-4 are accepted for backwards compatibility and are equivalent to 5)
-      uint64_t unlock_time;                         // Number of blocks before the oxen can be spent (0 to use the default lock time).
+      uint64_t unlock_time;                         // Number of blocks before the worktips can be spent (0 to use the default lock time).
       std::string payment_id;                       // (Optional) Random 64-character hex string to identify a transaction.
       bool get_tx_key;                              // (Optional) Return the transaction key after sending.
-      bool do_not_relay;                            // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool do_not_relay;                            // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool get_tx_hex;                              // Return the transaction as hex string after sending. (Defaults to false)
       bool get_tx_metadata;                         // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -432,7 +432,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Same as transfer, but can split into more than one tx if necessary.
   struct TRANSFER_SPLIT : RESTRICTED
   {
@@ -440,14 +440,14 @@ namespace tools::wallet_rpc {
 
     struct request
     {
-      std::list<wallet::transfer_destination> destinations; // Array of destinations to receive OXEN:
+      std::list<wallet::transfer_destination> destinations; // Array of destinations to receive WORKTIPS:
       uint32_t account_index;                       // (Optional) Transfer from this account index. (Defaults to 0)
       std::set<uint32_t> subaddr_indices;           // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       uint32_t priority;                            // Set a priority for the transaction. Accepted values are: 1 for unimportant or 5 for blink. (0 and 2-4 are accepted for backwards compatibility and are equivalent to 5)
-      uint64_t unlock_time;                         // Number of blocks before the oxen can be spent (0 to not add a lock).
+      uint64_t unlock_time;                         // Number of blocks before the worktips can be spent (0 to not add a lock).
       std::string payment_id;                       // (Optional) Random 32-byte/64-character hex string to identify a transaction.
       bool get_tx_keys;                             // (Optional) Return the transaction keys after sending.
-      bool do_not_relay;                            // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool do_not_relay;                            // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool get_tx_hex;                              // Return the transactions as hex string after sending.
       bool get_tx_metadata;                         // Return list of transaction metadata needed to relay the transfer later.
 
@@ -476,7 +476,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct DESCRIBE_TRANSFER : RESTRICTED
   {
     static constexpr auto names() { return NAMES("describe_transfer"); }
@@ -494,7 +494,7 @@ namespace tools::wallet_rpc {
       uint64_t amount_in;              // Amount in, in atomic units.
       uint64_t amount_out;             // amount out, in atomic units.
       uint32_t ring_size;              // Ring size of transfer.
-      uint64_t unlock_time;            // Number of blocks before the oxen can be spent (0 represents the default network lock time).
+      uint64_t unlock_time;            // Number of blocks before the worktips can be spent (0 represents the default network lock time).
       std::list<recipient> recipients; // List of addresses and amounts.
       std::string payment_id;          // Payment ID matching the input parameter.
       uint64_t change_amount;          // Change received from transaction in atomic units.
@@ -522,7 +522,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Sign a transaction created on a read-only wallet (in cold-signing process).
   struct SIGN_TRANSFER : RESTRICTED
   {
@@ -548,7 +548,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Submit a previously signed transaction on a read-only wallet (in cold-signing process).
   struct SUBMIT_TRANSFER : RESTRICTED
   {
@@ -569,7 +569,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Send all dust outputs back to the wallet's, to make them easier to spend (and mix).
   struct SWEEP_DUST : RESTRICTED
   {
@@ -578,7 +578,7 @@ namespace tools::wallet_rpc {
     struct request
     {
       bool get_tx_keys;     // (Optional) Return the transaction keys after sending.
-      bool do_not_relay;    // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool do_not_relay;    // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool get_tx_hex;      // (Optional) Return the transactions as hex string after sending. (Defaults to false)
       bool get_tx_metadata; // (Optional) Return list of transaction metadata needed to relay the transfer later. (Defaults to false)
 
@@ -607,7 +607,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Send all unlocked balance to an address.
   struct SWEEP_ALL : RESTRICTED
   {
@@ -621,7 +621,7 @@ namespace tools::wallet_rpc {
       bool subaddr_indices_all;           //
       uint32_t priority;                  // Set a priority for the transaction. Accepted values are: 1 for unimportant or 5 for blink. (0 and 2-4 are accepted for backwards compatibility and are equivalent to 5)
       uint64_t outputs;                   //
-      uint64_t unlock_time;               // Number of blocks before the oxen can be spent (0 to not add a lock).
+      uint64_t unlock_time;               // Number of blocks before the worktips can be spent (0 to not add a lock).
       std::string payment_id;             // (Optional) 64-character hex string to identify a transaction.
       bool get_tx_keys;                   // (Optional) Return the transaction keys after sending.
       uint64_t below_amount;              // (Optional) Include outputs below this amount.
@@ -654,7 +654,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Send all of a specific unlocked output to an address.
   struct SWEEP_SINGLE : RESTRICTED
   {
@@ -665,7 +665,7 @@ namespace tools::wallet_rpc {
       std::string address;    // Destination public address.
       uint32_t priority;      // Set a priority for the transaction. Accepted values are: 1 for unimportant or 5 for blink. (0 and 2-4 are accepted for backwards compatibility and are equivalent to 5)
       uint64_t outputs;       //
-      uint64_t unlock_time;   // Number of blocks before the oxen can be spent (0 to not add a lock).
+      uint64_t unlock_time;   // Number of blocks before the worktips can be spent (0 to not add a lock).
       std::string payment_id; // (Optional) 64-character hex string to identify a transaction.
       bool get_tx_key;        // (Optional) Return the transaction keys after sending.
       std::string key_image;  // Key image of specific output to sweep.
@@ -691,7 +691,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Relay transaction metadata to the daemon
   struct RELAY_TX : RPC_COMMAND
   {
@@ -713,7 +713,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Save the wallet file.
   struct STORE : RESTRICTED
   {
@@ -724,7 +724,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   //
   struct payment_details
   {
@@ -740,7 +740,7 @@ namespace tools::wallet_rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get a list of incoming payments using a given payment id.
   struct GET_PAYMENTS : RPC_COMMAND
   {
@@ -761,7 +761,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get a list of incoming payments using a given payment id,
   // or a list of payments ids, from a given height.
   //
@@ -788,13 +788,13 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   //
   struct transfer_details
   {
     uint64_t amount;                            // Amount of this transfer.
     bool spent;                                 // Indicates if this transfer has been spent.
-    uint64_t global_index;                      // The index into the global list of transactions grouped by amount in the Loki network.
+    uint64_t global_index;                      // The index into the global list of transactions grouped by amount in the Worktips network.
     std::string tx_hash;                        // Several incoming transfers may share the same hash if they were in the same transaction.
     cryptonote::subaddress_index subaddr_index; // Major & minor index, account and subaddress index respectively.
     std::string key_image;                      // Key image for the incoming transfer's unspent output (empty unless verbose is true).
@@ -805,7 +805,7 @@ namespace tools::wallet_rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Return a list of incoming transfers to the wallet.
   struct INCOMING_TRANSFERS : RPC_COMMAND
   {
@@ -828,7 +828,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Return the spend or view private key.
   struct QUERY_KEY : RESTRICTED
   {
@@ -849,7 +849,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Make an integrated address from the wallet address and a payment id.
   struct MAKE_INTEGRATED_ADDRESS : RPC_COMMAND
   {
@@ -872,7 +872,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Retrieve the standard address and payment id corresponding to an integrated address.
   struct SPLIT_INTEGRATED_ADDRESS : RPC_COMMAND
   {
@@ -895,7 +895,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Stops the wallet, storing the current state.
   struct STOP_WALLET : RESTRICTED
   {
@@ -906,7 +906,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Rescan the blockchain from scratch, losing any information
   // which can not be recovered from the blockchain itself.
   // This includes destination addresses, tx secret keys, tx notes, etc.
@@ -926,7 +926,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Set arbitrary string notes for transactions.
   struct SET_TX_NOTES : RESTRICTED
   {
@@ -943,7 +943,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get string notes for transactions.
   struct GET_TX_NOTES : RPC_COMMAND
   {
@@ -964,7 +964,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Set arbitrary attribute.
   struct SET_ATTRIBUTE : RESTRICTED
   {
@@ -981,7 +981,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get attribute value by name.
   struct GET_ATTRIBUTE : RESTRICTED
   {
@@ -1003,7 +1003,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get transaction secret key from transaction id.
   struct GET_TX_KEY : RPC_COMMAND
   {
@@ -1024,7 +1024,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Check a transaction in the blockchain with its secret key.
   struct CHECK_TX_KEY : RPC_COMMAND
   {
@@ -1049,7 +1049,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get transaction signature to prove it.
   struct GET_TX_PROOF : RPC_COMMAND
   {
@@ -1072,7 +1072,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Prove a transaction by checking its signature.
   struct CHECK_TX_PROOF : RPC_COMMAND
   {
@@ -1099,7 +1099,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Generate a signature to prove a spend. Unlike proving a transaction, it does not requires the destination public address.
   struct GET_SPEND_PROOF : RPC_COMMAND
   {
@@ -1121,7 +1121,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Prove a spend using a signature. Unlike proving a transaction, it does not requires the destination public address.
   struct CHECK_SPEND_PROOF : RPC_COMMAND
   {
@@ -1144,7 +1144,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Generate a signature to prove of an available amount in a wallet.
   struct GET_RESERVE_PROOF : RPC_COMMAND
   {
@@ -1168,7 +1168,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Proves a wallet has a disposable reserve using a signature.
   struct CHECK_RESERVE_PROOF : RPC_COMMAND
   {
@@ -1193,7 +1193,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Returns a list of transfers, by default all transfer types are included. If all requested type fields are false, then all transfers will be queried.
   struct GET_TRANSFERS : RESTRICTED
   {
@@ -1231,7 +1231,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Returns a string with the transfers formatted as csv
   struct GET_TRANSFERS_CSV : RESTRICTED
   {
@@ -1247,7 +1247,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Show information about a transfer to/from this address.
   struct GET_TRANSFER_BY_TXID : RESTRICTED
   {
@@ -1270,7 +1270,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Sign a string.
   struct SIGN : RESTRICTED
   {
@@ -1293,7 +1293,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Verify a signature on a string.
   struct VERIFY : RESTRICTED
   {
@@ -1316,7 +1316,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Export all outputs in hex format.
   struct EXPORT_OUTPUTS : RESTRICTED
   {
@@ -1337,7 +1337,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Export transfers to csv
   struct EXPORT_TRANSFERS : RPC_COMMAND
   {
@@ -1370,7 +1370,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Import outputs in hex format.
   struct IMPORT_OUTPUTS : RESTRICTED
   {
@@ -1391,7 +1391,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Export a signed set of key images.
   struct EXPORT_KEY_IMAGES : RPC_COMMAND
   {
@@ -1421,7 +1421,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Import signed key images list and verify their spent status.
   struct IMPORT_KEY_IMAGES : RESTRICTED
   {
@@ -1453,7 +1453,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct uri_spec
   {
     std::string address;        // Wallet address.
@@ -1465,7 +1465,7 @@ namespace tools::wallet_rpc {
     KV_MAP_SERIALIZABLE
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Create a payment URI using the official URI spec.
   struct MAKE_URI : RPC_COMMAND
   {
@@ -1481,7 +1481,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Parse a payment URI to get payment information.
   struct PARSE_URI : RPC_COMMAND
   {
@@ -1503,7 +1503,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Add an entry to the address book.
   struct ADD_ADDRESS_BOOK_ENTRY : RESTRICTED
   {
@@ -1525,7 +1525,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Edit a entry in the address book.
   struct EDIT_ADDRESS_BOOK_ENTRY : RESTRICTED
   {
@@ -1545,7 +1545,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Retrieves entries from the address book.
   struct GET_ADDRESS_BOOK_ENTRY : RESTRICTED
   {
@@ -1575,7 +1575,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Delete an entry from the address book.
   struct DELETE_ADDRESS_BOOK_ENTRY : RESTRICTED
   {
@@ -1591,7 +1591,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Rescan the blockchain for spent outputs.
   struct RESCAN_SPENT : RESTRICTED
   {
@@ -1602,7 +1602,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Refresh a wallet after opening.
   struct REFRESH : RESTRICTED
   {
@@ -1624,7 +1624,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct AUTO_REFRESH : RESTRICTED
   {
     static constexpr auto names() { return NAMES("auto_refresh"); }
@@ -1640,8 +1640,8 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Start mining in the oxen daemon.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Start mining in the worktips daemon.
   struct START_MINING : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("start_mining"); }
@@ -1656,8 +1656,8 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Stop mining in the oxen daemon.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Stop mining in the worktips daemon.
   struct STOP_MINING : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("stop_mining"); }
@@ -1667,7 +1667,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get a list of available languages for your wallet's seed.
   struct GET_LANGUAGES : RPC_COMMAND
   {
@@ -1684,8 +1684,8 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Create a new wallet. You need to have set the argument "'--wallet-dir" when launching oxen-wallet-rpc to make this work.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Create a new wallet. You need to have set the argument "'--wallet-dir" when launching worktips-wallet-rpc to make this work.
   struct CREATE_WALLET : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("create_wallet"); }
@@ -1705,8 +1705,8 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Open a wallet. You need to have set the argument "--wallet-dir" when launching oxen-wallet-rpc to make this work.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Open a wallet. You need to have set the argument "--wallet-dir" when launching worktips-wallet-rpc to make this work.
   // The wallet rpc executable may only open wallet files within the same directory as wallet-dir, otherwise use the
   // "--wallet-file" flag to open specific wallets.
   struct OPEN_WALLET : RPC_COMMAND
@@ -1725,7 +1725,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Close the currently opened wallet, after trying to save it.
   struct CLOSE_WALLET : RPC_COMMAND
   {
@@ -1741,7 +1741,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Change a wallet password.
   struct CHANGE_WALLET_PASSWORD : RESTRICTED
   {
@@ -1758,7 +1758,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Restore a wallet using the private spend key, view key and public address.
   struct GENERATE_FROM_KEYS : RPC_COMMAND
   {
@@ -1786,7 +1786,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Restore a wallet using the seed words.
   struct RESTORE_DETERMINISTIC_WALLET : RPC_COMMAND
   {
@@ -1816,7 +1816,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Check if a wallet is a multisig one.
   struct IS_MULTISIG : RPC_COMMAND
   {
@@ -1835,7 +1835,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Prepare a wallet for multisig by generating a multisig string to share with peers.
   struct PREPARE_MULTISIG : RESTRICTED
   {
@@ -1851,7 +1851,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Make a wallet multisig by importing peers multisig string.
   struct MAKE_MULTISIG : RESTRICTED
   {
@@ -1875,7 +1875,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Export multisig info for other participants.
   struct EXPORT_MULTISIG : RESTRICTED
   {
@@ -1891,7 +1891,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Import multisig info from other participants.
   struct IMPORT_MULTISIG : RESTRICTED
   {
@@ -1912,7 +1912,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Turn this wallet into a multisig wallet, extra step for N-1/N wallets.
   struct FINALIZE_MULTISIG : RESTRICTED
   {
@@ -1934,7 +1934,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   //
   struct EXCHANGE_MULTISIG_KEYS : RESTRICTED
   {
@@ -1957,7 +1957,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Sign a transaction in multisig.
   struct SIGN_MULTISIG : RESTRICTED
   {
@@ -1979,7 +1979,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Submit a signed multisig transaction.
   struct SUBMIT_MULTISIG : RESTRICTED
   {
@@ -2000,7 +2000,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Get RPC version Major & Minor integer-format, where Major is the first 16 bits and Minor the last 16 bits.
   struct GET_VERSION : RPC_COMMAND
   {
@@ -2016,7 +2016,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Stake for Service Node.
   struct STAKE : RESTRICTED
   {
@@ -2025,12 +2025,12 @@ namespace tools::wallet_rpc {
     struct request
     {
       std::string        destination;      // Primary Public address that the rewards will go to.
-      uint64_t           amount;           // Amount of Loki to stake in atomic units.
+      uint64_t           amount;           // Amount of Worktips to stake in atomic units.
       std::set<uint32_t> subaddr_indices;  // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       std::string        service_node_key; // Service Node Public Address.
       uint32_t           priority;         // Set a priority for the transaction. Accepted values are: or 0-4 for: default, unimportant, normal, elevated, priority.
       bool               get_tx_key;       // (Optional) Return the transaction key after sending.
-      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool               get_tx_hex;       // Return the transaction as hex string after sending (Defaults to false)
       bool               get_tx_metadata;  // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -2052,7 +2052,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Register Service Node.
   struct REGISTER_SERVICE_NODE : RESTRICTED
   {
@@ -2062,7 +2062,7 @@ namespace tools::wallet_rpc {
     {
       std::string register_service_node_str; // String supplied by the prepare_registration command.
       bool        get_tx_key;                // (Optional) Return the transaction key after sending.
-      bool        do_not_relay;              // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool        do_not_relay;              // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool        get_tx_hex;                // Return the transaction as hex string after sending (Defaults to false)
       bool        get_tx_metadata;           // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -2084,7 +2084,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Request to unlock stake by deregistering Service Node.
   struct REQUEST_STAKE_UNLOCK : RESTRICTED
   {
@@ -2106,7 +2106,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Check if Service Node can unlock its stake.
   struct CAN_REQUEST_STAKE_UNLOCK : RESTRICTED
   {
@@ -2128,8 +2128,8 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Parse an address to validate if it's a valid Loki address.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Parse an address to validate if it's a valid Worktips address.
   struct VALIDATE_ADDRESS : RPC_COMMAND
   {
     static constexpr auto names() { return NAMES("validate_address"); }
@@ -2145,7 +2145,7 @@ namespace tools::wallet_rpc {
 
     struct response
     {
-      bool valid;                    // States if it is a valid Loki address.
+      bool valid;                    // States if it is a valid Worktips address.
       bool integrated;               // States if it is an integrated address.
       bool subaddress;               // States if it is a subaddress.
       std::string nettype;           // States if the nettype is mainet, testnet, devnet.
@@ -2155,7 +2155,7 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct SET_DAEMON : RESTRICTED
   {
     static constexpr auto names() { return NAMES("set_daemon"); }
@@ -2176,7 +2176,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct SET_LOG_LEVEL : RESTRICTED
   {
     static constexpr auto names() { return NAMES("set_log_level"); }
@@ -2191,7 +2191,7 @@ namespace tools::wallet_rpc {
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct SET_LOG_CATEGORIES : RESTRICTED
   {
     static constexpr auto names() { return NAMES("set_log_categories"); }
@@ -2211,17 +2211,17 @@ namespace tools::wallet_rpc {
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct ONS_BUY_MAPPING : RESTRICTED
   {
     static constexpr auto names() { return NAMES("ons_buy_mapping"); }
 
     static constexpr const char *description =
-R"(Buy a Loki Name System (ONS) mapping that maps a unique name to a Session ID or Lokinet address.
+R"(Buy a Worktips Name System (ONS) mapping that maps a unique name to a Session ID or Worktipsnet address.
 
-Currently supports Session, Lokinet and Wallet registrations. Lokinet registrations can be for 1, 2, 5, or 10 years by specifying a type value of "lokinet", "lokinet_2y", "lokinet_5y", "lokinet_10y". Session registrations do not expire.
+Currently supports Session, Worktipsnet and Wallet registrations. Worktipsnet registrations can be for 1, 2, 5, or 10 years by specifying a type value of "worktipsnet", "worktipsnet_2y", "worktipsnet_5y", "worktipsnet_10y". Session registrations do not expire.
 
-The owner of the ONS entry (by default, the purchasing wallet) will be permitted to submit ONS update transactions to the Loki blockchain (for example to update a Session pubkey or the target Lokinet address). You may change the primary owner or add a backup owner in the registration and can change them later with update transactions. Owner addresses can be either Loki wallets, or generic ed25519 pubkeys (for advanced uses).
+The owner of the ONS entry (by default, the purchasing wallet) will be permitted to submit ONS update transactions to the Worktips blockchain (for example to update a Session pubkey or the target Worktipsnet address). You may change the primary owner or add a backup owner in the registration and can change them later with update transactions. Owner addresses can be either Worktips wallets, or generic ed25519 pubkeys (for advanced uses).
 
 For Session, the recommended owner or backup owner is the ed25519 public key of the user's Session ID.
 
@@ -2231,17 +2231,17 @@ For more information on updating and signing see the ONS_UPDATE_MAPPING document
 
     struct request
     {
-      std::string        type;            // The mapping type: "session", "lokinet", "lokinet_2y", "lokinet_5y", "lokinet_10y", "wallet".
+      std::string        type;            // The mapping type: "session", "worktipsnet", "worktipsnet_2y", "worktipsnet_5y", "worktipsnet_10y", "wallet".
       std::string        owner;           // (Optional): The ed25519 public key or wallet address that has authority to update the mapping.
       std::string        backup_owner;    // (Optional): The secondary, backup public key that has authority to update the mapping.
-      std::string        name;            // The name to purchase via Oxen Name Service
-      std::string        value;           // The value that the name maps to via Oxen Name Service, (i.e. For Session: [display name->session public key],  for wallets: [name->wallet address], for Lokinet: [name->domain name]).
+      std::string        name;            // The name to purchase via Worktips Name Service
+      std::string        value;           // The value that the name maps to via Worktips Name Service, (i.e. For Session: [display name->session public key],  for wallets: [name->wallet address], for Worktipsnet: [name->domain name]).
 
       uint32_t           account_index;   // (Optional) Transfer from this account index. (Defaults to 0)
       std::set<uint32_t> subaddr_indices; // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       uint32_t           priority;        // Set a priority for the transaction. Accepted values are: or 0-4 for: default, unimportant, normal, elevated, priority.
       bool               get_tx_key;      // (Optional) Return the transaction key after sending.
-      bool               do_not_relay;    // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool               do_not_relay;    // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool               get_tx_hex;      // Return the transaction as hex string after sending (Defaults to false)
       bool               get_tx_metadata; // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -2263,27 +2263,27 @@ For more information on updating and signing see the ONS_UPDATE_MAPPING document
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Renew an active lokinet ONS registration
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Renew an active worktipsnet ONS registration
   struct ONS_RENEW_MAPPING : RESTRICTED
   {
     static constexpr auto names() { return NAMES("ons_renew_mapping"); }
 
     static constexpr const char *description =
-R"(Renews a Loki Name System lokinet mapping by adding to the existing expiry time.
+R"(Renews a Worktips Name System worktipsnet mapping by adding to the existing expiry time.
 
-The renewal can be for 1, 2, 5, or 10 years by specifying a `type` value of "lokinet_2y", "lokinet_10y", etc.)";
+The renewal can be for 1, 2, 5, or 10 years by specifying a `type` value of "worktipsnet_2y", "worktipsnet_10y", etc.)";
 
     struct request
     {
-      std::string        type;      // The mapping type, "lokinet" (1-year), or "lokinet_2y", "lokinet_5y", "lokinet_10y" for multi-year registrations.
+      std::string        type;      // The mapping type, "worktipsnet" (1-year), or "worktipsnet_2y", "worktipsnet_5y", "worktipsnet_10y" for multi-year registrations.
       std::string        name;      // The name to update
 
       uint32_t           account_index;    // (Optional) Transfer from this account index. (Defaults to 0)
       std::set<uint32_t> subaddr_indices;  // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       uint32_t           priority;         // Set a priority for the transaction. Accepted values are: 0-4 for: default, unimportant, normal, elevated, priority.
       bool               get_tx_key;       // (Optional) Return the transaction key after sending.
-      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool               get_tx_hex;       // Return the transaction as hex string after sending (Defaults to false)
       bool               get_tx_metadata;  // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -2293,14 +2293,14 @@ The renewal can be for 1, 2, 5, or 10 years by specifying a `type` value of "lok
     using response = ONS_BUY_MAPPING::response;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
-  // Update the underlying value in the name->value mapping via Loki Name Service.
+  WORKTIPS_RPC_DOC_INTROSPECT
+  // Update the underlying value in the name->value mapping via Worktips Name Service.
   struct ONS_UPDATE_MAPPING : RESTRICTED
   {
     static constexpr auto names() { return NAMES("ons_update_mapping"); }
 
     static constexpr const char *description =
-R"(Update a Loki Name System mapping to refer to a new address or owner.
+R"(Update a Worktips Name System mapping to refer to a new address or owner.
 
 At least one field (value, owner, or backup owner) must be specified in the update.
 
@@ -2310,9 +2310,9 @@ If signing is performed externally then you must first encrypt the `value` (if b
 
     struct request
     {
-      std::string        type;      // The mapping type, "session", "lokinet", or "wallet".
-      std::string        name;      // The name to update via Loki Name Service
-      std::string        value;     // (Optional): The new value that the name maps to via Loki Name Service. If not specified or given the empty string "", then the mapping's value remains unchanged. If using a `signature` then this value (if non-empty) must be already encrypted.
+      std::string        type;      // The mapping type, "session", "worktipsnet", or "wallet".
+      std::string        name;      // The name to update via Worktips Name Service
+      std::string        value;     // (Optional): The new value that the name maps to via Worktips Name Service. If not specified or given the empty string "", then the mapping's value remains unchanged. If using a `signature` then this value (if non-empty) must be already encrypted.
       std::string        owner;     // (Optional): The new owner of the mapping. If not specified or given the empty string "", then the mapping's owner remains unchanged.
       std::string        backup_owner; // (Optional): The new backup owner of the mapping. If not specified or given the empty string "", then the mapping's backup owner remains unchanged.
       std::string        signature; // (Optional): Signature derived using libsodium generichash on {current txid blob, new value blob} of the mapping to update. By default the hash is signed using the wallet's spend key as an ed25519 keypair, if signature is specified.
@@ -2321,7 +2321,7 @@ If signing is performed externally then you must first encrypt the `value` (if b
       std::set<uint32_t> subaddr_indices;  // (Optional) Transfer from this set of subaddresses. (Defaults to 0)
       uint32_t           priority;         // Set a priority for the transaction. Accepted values are: 0-4 for: default, unimportant, normal, elevated, priority.
       bool               get_tx_key;       // (Optional) Return the transaction key after sending.
-      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the oxen network. (Defaults to false)
+      bool               do_not_relay;     // (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
       bool               get_tx_hex;       // Return the transaction as hex string after sending (Defaults to false)
       bool               get_tx_metadata;  // Return the metadata needed to relay the transaction. (Defaults to false)
 
@@ -2344,7 +2344,7 @@ If signing is performed externally then you must first encrypt the `value` (if b
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   struct ONS_MAKE_UPDATE_SIGNATURE : RESTRICTED
   {
     static constexpr auto names() { return NAMES("ons_make_update_mapping_signature"); }
@@ -2356,9 +2356,9 @@ This command is only required if the open wallet is one of the owners of a ONS r
 
     struct request
     {
-      std::string type;  // The mapping type, currently we support "session", "lokinet" and "wallet" mappings.
-      std::string name;  // The desired name to update via Oxen Name Service
-      std::string encrypted_value; // (Optional): The new encrypted value that the name maps to via Oxen Name Service. If not specified or given the empty string "", then the mapping's value remains unchanged.
+      std::string type;  // The mapping type, currently we support "session", "worktipsnet" and "wallet" mappings.
+      std::string name;  // The desired name to update via Worktips Name Service
+      std::string encrypted_value; // (Optional): The new encrypted value that the name maps to via Worktips Name Service. If not specified or given the empty string "", then the mapping's value remains unchanged.
       std::string owner;     // (Optional): The new owner of the mapping. If not specified or given the empty string "", then the mapping's owner remains unchanged.
       std::string backup_owner; // (Optional): The new backup owner of the mapping. If not specified or given the empty string "", then the mapping's backup owner remains unchanged.
       uint32_t account_index; // (Optional) Use this wallet's subaddress account for generating the signature
@@ -2374,7 +2374,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Takes a ONS name, upon validating it, generates the hash and returns the base64 representation of the hash suitable for use in the daemon ONS name queries.
   struct ONS_HASH_NAME : RPC_COMMAND
   {
@@ -2382,7 +2382,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
 
     struct request
     {
-      std::string type; // The mapping type, "session", "lokinet" or "wallet".
+      std::string type; // The mapping type, "session", "worktipsnet" or "wallet".
       std::string name; // The desired name to hash
 
       KV_MAP_SERIALIZABLE
@@ -2396,7 +2396,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Returns a list of known, plain-text ONS names along with record details for names that this
   // wallet knows about.  This can optionally decrypt the ONS value as well, or else just return the
   // encrypted value.
@@ -2406,14 +2406,14 @@ This command is only required if the open wallet is one of the owners of a ONS r
 
     struct known_record
     {
-      std::string type;                          // The mapping type, "session" or "lokinet".
+      std::string type;                          // The mapping type, "session" or "worktipsnet".
       std::string hashed;                        // The hashed name (in base64)
       std::string name;                          // The plaintext name
-      std::string owner;                         // The public key that purchased the Loki Name Service entry.
-      std::optional<std::string> backup_owner;   // The backup public key or wallet that the owner specified when purchasing the Loki Name Service entry. Omitted if no backup owner.
+      std::string owner;                         // The public key that purchased the Worktips Name Service entry.
+      std::optional<std::string> backup_owner;   // The backup public key or wallet that the owner specified when purchasing the Worktips Name Service entry. Omitted if no backup owner.
       std::string encrypted_value;               // The encrypted value that the name maps to, in hex.
       std::optional<std::string> value;          // Decrypted value that that name maps to.  Only provided if `decrypt: true` was specified in the request.
-      uint64_t update_height;                    // The last height that this Loki Name Service entry was updated on the Blockchain.
+      uint64_t update_height;                    // The last height that this Worktips Name Service entry was updated on the Blockchain.
       std::optional<uint64_t> expiration_height; // For records that expire, this will be set to the expiration block height.
       std::optional<bool> expired;               // Indicates whether the record has expired. Only included in the response if "include_expired" is specified in the request.
       std::string txid;                          // The txid of the mapping's most recent update or purchase.
@@ -2435,7 +2435,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Adds one or more names to the persistent ONS wallet cache of known names (i.e. for names that
   // are owned by this wallet that aren't currently in the cache).
   struct ONS_ADD_KNOWN_NAMES : RPC_COMMAND
@@ -2444,7 +2444,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
 
     struct record
     {
-      std::string type; // The ONS type (mandatory); currently support values are: "session", "lokinet"
+      std::string type; // The ONS type (mandatory); currently support values are: "session", "worktipsnet"
       std::string name; // The (unhashed) name of the record
 
       KV_MAP_SERIALIZABLE
@@ -2460,7 +2460,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     using response = EMPTY;
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Takes a ONS encrypted value and encrypts the mapping value using the ONS name.
   struct ONS_ENCRYPT_VALUE : RPC_COMMAND
   {
@@ -2469,7 +2469,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     struct request
     {
       std::string name;            // The ONS name with which to encrypt the value.
-      std::string type;            // The mapping type: "session" or "lokinet".
+      std::string type;            // The mapping type: "session" or "worktipsnet".
       std::string value;           // The value to be encrypted.
 
       KV_MAP_SERIALIZABLE
@@ -2483,7 +2483,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     };
   };
 
-  OXEN_RPC_DOC_INTROSPECT
+  WORKTIPS_RPC_DOC_INTROSPECT
   // Takes a ONS encrypted value and decrypts the mapping value using the ONS name.
   struct ONS_DECRYPT_VALUE : RPC_COMMAND
   {
@@ -2492,7 +2492,7 @@ This command is only required if the open wallet is one of the owners of a ONS r
     struct request
     {
       std::string name;            // The ONS name of the given encrypted value.
-      std::string type;            // The mapping type: "session" or "lokinet".
+      std::string type;            // The mapping type: "session" or "worktipsnet".
       std::string encrypted_value; // The encrypted value represented in hex.
 
       KV_MAP_SERIALIZABLE

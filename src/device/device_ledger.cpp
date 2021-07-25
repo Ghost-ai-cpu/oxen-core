@@ -1,5 +1,5 @@
 // Copyright (c) 2017-2019, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 // 
 // All rights reserved.
 // 
@@ -49,8 +49,8 @@ namespace hw {
 
   #ifdef WITH_DEVICE_LEDGER
 
-    #undef OXEN_DEFAULT_LOG_CATEGORY
-    #define OXEN_DEFAULT_LOG_CATEGORY "device.ledger"
+    #undef WORKTIPS_DEFAULT_LOG_CATEGORY
+    #define WORKTIPS_DEFAULT_LOG_CATEGORY "device.ledger"
 
     /* ===================================================================== */
     /* ===                           Debug                              ==== */
@@ -375,7 +375,7 @@ namespace hw {
 #endif
         cmd << " p=(0x" << std::setw(2) << +buffer_send[2] << ",0x" << std::setw(2) << +buffer_send[3] << ')';
         cmd << " sz=0x" << std::setw(2) << +buffer_send[4] << '[' << std::to_string(buffer_send[4]) << "] ";
-        MDEBUG("CMD: " << cmd.str() << oxenmq::to_hex(buffer_send + 5, buffer_send + length_send));
+        MDEBUG("CMD: " << cmd.str() << worktipsmq::to_hex(buffer_send + 5, buffer_send + length_send));
         last_cmd = std::chrono::steady_clock::now();
       }
     }
@@ -383,8 +383,8 @@ namespace hw {
     void device_ledger::logRESP() {
       if (apdu_verbose)
         MDEBUG("RESP (+" << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_cmd).count() << "ms): "
-              << oxenmq::to_hex(std::string_view{reinterpret_cast<const char*>(&sw), sizeof(sw)})
-              << ' ' << oxenmq::to_hex(buffer_recv, buffer_recv + length_recv));
+              << worktipsmq::to_hex(std::string_view{reinterpret_cast<const char*>(&sw), sizeof(sw)})
+              << ' ' << worktipsmq::to_hex(buffer_recv, buffer_recv + length_recv));
     }
 
     int device_ledger::set_command_header(unsigned char ins, unsigned char p1, unsigned char p2) {
@@ -482,8 +482,8 @@ namespace hw {
     bool device_ledger::reset() {
       reset_buffer();
       int offset = set_command_header_noopt(INS_RESET);
-      CHECK_AND_ASSERT_THROW_MES(offset + OXEN_VERSION_STR.size() <= BUFFER_SEND_SIZE, "OXEN_VERSION_STR is too long");
-      send_bytes(OXEN_VERSION_STR.data(), OXEN_VERSION_STR.size(), offset);
+      CHECK_AND_ASSERT_THROW_MES(offset + WORKTIPS_VERSION_STR.size() <= BUFFER_SEND_SIZE, "WORKTIPS_VERSION_STR is too long");
+      send_bytes(WORKTIPS_VERSION_STR.data(), WORKTIPS_VERSION_STR.size(), offset);
       finish_and_exchange(offset);
 
       CHECK_AND_ASSERT_THROW_MES(length_recv>=3, "Communication error, less than three bytes received. Check your application version.");
@@ -1583,7 +1583,7 @@ namespace hw {
           additional_txkey.sec = additional_tx_keys[output_index];
       }
 
-      bool &is_change = found_change; // NOTE(oxen): Alias our param into theirs so we don't have to change much code.
+      bool &is_change = found_change; // NOTE(worktips): Alias our param into theirs so we don't have to change much code.
 
       if (change_addr && dst_entr == *change_addr && !is_change)
         is_change = true; // sending change to yourself; derivation = a*R

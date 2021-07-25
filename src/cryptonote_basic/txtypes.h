@@ -17,7 +17,7 @@ enum class txversion : uint16_t {
     state_change,
     key_image_unlock,
     stake,
-    oxen_name_system,
+    worktips_name_system,
     _count
   };
 

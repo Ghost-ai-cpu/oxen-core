@@ -45,7 +45,7 @@
 #include "crypto/hash.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "tx_blink.h"
-#include "oxen_economy.h"
+#include "worktips_economy.h"
 
 namespace cryptonote
 {

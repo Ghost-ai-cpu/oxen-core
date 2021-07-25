@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2020, The Monero Project
-// Copyright (c)      2018, The Loki Project
+// Copyright (c)      2018, The Worktips Project
 //
 // All rights reserved.
 //
@@ -47,8 +47,8 @@
 #include "command_server.h"
 #include "daemon.h"
 
-#undef OXEN_DEFAULT_LOG_CATEGORY
-#define OXEN_DEFAULT_LOG_CATEGORY "daemon"
+#undef WORKTIPS_DEFAULT_LOG_CATEGORY
+#define WORKTIPS_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace po = boost::program_options;
 
@@ -125,16 +125,16 @@ int main(int argc, char const * argv[])
 
     if (command_line::get_arg(vm, command_line::arg_help))
     {
-      std::cout << CYAN << "Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")" << RESET << "\n\n";
+      std::cout << CYAN << "Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")" << RESET << "\n\n";
       std::cout << "Usage: " + std::string{argv[0]} + " [options|settings] [daemon_command...]" << std::endl << std::endl;
       std::cout << visible_options << std::endl;
       return 0;
     }
 
-    // Oxen Version
+    // Worktips Version
     if (command_line::get_arg(vm, command_line::arg_version))
     {
-      std::cout << CYAN << "Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")" << RESET << "\n\n";
+      std::cout << CYAN << "Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")" << RESET << "\n\n";
       return 0;
     }
 
@@ -145,9 +145,9 @@ int main(int argc, char const * argv[])
       // *only* by the command-line arguments but *not* config file arguments, unlike pretty much
       // all other command line options (where we load from both, with cli options taking
       // precendence).  Thus it's possible that the data-dir isn't specified on the command-line
-      // which means *for the purpose of loading the config file* that we use `~/.oxen`, but that
+      // which means *for the purpose of loading the config file* that we use `~/.worktips`, but that
       // after we load the config file it could be something else.  (In such an edge case, we simply
-      // ignore a <final-data-dir>/oxen.conf).
+      // ignore a <final-data-dir>/worktips.conf).
       auto data_dir = fs::absolute(fs::u8path(command_line::get_arg(vm, cryptonote::arg_data_dir)));
 
       // --regtest should append a /regtest to the data-dir, but this is done here rather than in the
@@ -156,13 +156,13 @@ int main(int argc, char const * argv[])
       if (command_line::get_arg(vm, cryptonote::arg_regtest_on))
         data_dir /= "regtest";
 
-      // We also have to worry about migrating loki.conf -> oxen.conf *and* about a potential
-      // ~/.loki -> ~/.oxen migration, so build a list of possible options along with whether we
+      // We also have to worry about migrating worktips.conf -> worktips.conf *and* about a potential
+      // ~/.worktips -> ~/.worktips migration, so build a list of possible options along with whether we
       // want to rename if we find one (the data-dir migration happens later):
       std::list<std::pair<fs::path, bool>> potential;
       if (std::error_code ec; fs::exists(data_dir, ec)) {
         potential.emplace_back(data_dir / CRYPTONOTE_NAME ".conf", false);
-        potential.emplace_back(data_dir / "loki.conf", true);
+        potential.emplace_back(data_dir / "worktips.conf", true);
       } else if (command_line::is_arg_defaulted(vm, cryptonote::arg_data_dir)) {
         // If we weren't given an explict command-line data-dir then we also need to check the
         // legacy data directory.  (We will rename it, later, but we have to check it *first*
@@ -176,7 +176,7 @@ int main(int argc, char const * argv[])
         else if (command_line::get_arg(vm, cryptonote::arg_regtest_on)) old_data_dir /= "regtest";
 
         potential.emplace_back(old_data_dir / CRYPTONOTE_NAME ".conf", false);
-        potential.emplace_back(old_data_dir / "loki.conf", true);
+        potential.emplace_back(old_data_dir / "worktips.conf", true);
       }
       for (auto& [conf, rename] : potential) {
         if (std::error_code ec; fs::exists(conf, ec)) {
@@ -240,7 +240,7 @@ int main(int argc, char const * argv[])
     }
 
     // data_dir
-    //   default: e.g. ~/.oxen/ or ~/.oxen/testnet
+    //   default: e.g. ~/.worktips/ or ~/.worktips/testnet
     //   if data-dir argument given:
     //     absolute path
     //     relative path: relative to cwd
@@ -255,7 +255,7 @@ int main(int argc, char const * argv[])
       data_dir /= "regtest";
 
     // Will check if the default data directory is used and if it exists. 
-    // Then will ensure that migration from the old data directory (.loki) has occurred if it exists.
+    // Then will ensure that migration from the old data directory (.worktips) has occurred if it exists.
     if (command_line::is_arg_defaulted(vm, cryptonote::arg_data_dir) && !fs::exists(data_dir)) {
       auto old_data_dir = tools::get_depreciated_default_data_dir();
       if (testnet) old_data_dir /= "testnet";
@@ -312,7 +312,7 @@ int main(int argc, char const * argv[])
 
     // logging is now set up
     // FIXME: only print this when starting up as a daemon but not when running rpc commands
-    MGINFO_CYAN("Oxen '" << OXEN_RELEASE_NAME << "' (v" << OXEN_VERSION_FULL << ")");
+    MGINFO_CYAN("Worktips '" << WORKTIPS_RELEASE_NAME << "' (v" << WORKTIPS_VERSION_FULL << ")");
 
     // If there are positional options, we're running a daemon command
     {
@@ -322,7 +322,7 @@ int main(int argc, char const * argv[])
       {
         auto rpc_config = cryptonote::rpc_args::process(vm);
         std::string rpc_addr;
-        // TODO: remove this in oxen 9.x and only use rpc-admin
+        // TODO: remove this in worktips 9.x and only use rpc-admin
         if (!is_arg_defaulted(vm, cryptonote::rpc::http_server::arg_rpc_bind_port) ||
             rpc_config.bind_ip.has_value()) {
           auto rpc_port = command_line::get_arg(vm, cryptonote::rpc::http_server::arg_rpc_bind_port);
@@ -335,7 +335,7 @@ int main(int argc, char const * argv[])
         } else {
           rpc_addr = command_line::get_arg(vm, cryptonote::rpc::http_server::arg_rpc_admin)[0];
           if (rpc_addr == "none")
-            throw std::runtime_error{"Cannot invoke oxend command: --rpc-admin is disabled"};
+            throw std::runtime_error{"Cannot invoke worktipsd command: --rpc-admin is disabled"};
         }
 
         {
@@ -351,7 +351,7 @@ int main(int argc, char const * argv[])
 
     MINFO("Moving from main() into the daemonize now.");
 
-    return daemonizer::daemonize<daemonize::daemon>("Oxen Daemon", argc, argv, std::move(vm))
+    return daemonizer::daemonize<daemonize::daemon>("Worktips Daemon", argc, argv, std::move(vm))
         ? 0 : 1;
   }
   catch (std::exception const & ex)
