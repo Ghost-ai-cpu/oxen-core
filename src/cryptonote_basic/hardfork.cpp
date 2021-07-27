@@ -39,8 +39,8 @@ static constexpr std::array mainnet_hard_forks =
   hard_fork{8,  0,    10, 1554448860 /*2018-07-31 03:00 UTC*/ }, // Worktips 0.2: New emissions schedule
   hard_fork{9,  0,   54689, 1561804620 /*2018-09-20 12:00 UTC*/ }, // Worktips 1: Service nodes launched
   hard_fork{10, 0,   54690, 1561804740 /*2018-12-13 23:30 UTC*/ }, // Worktips 2: Bulletproofs, gov fee batching
-  hard_fork{11, 0,   467000, 1561804860 /*2019-03-26 13:00 AEDT*/ }, // Worktips 3: Infinite staking, CN-Turtle
-  hard_fork{12, 0,   321467, 1563940800 /*2019-07-24 14:00 AEDT*/ }, // Worktips 4: Checkpointing, RandomXL, decommissioning, Storage Server launched
+  hard_fork{11, 0,   54691, 1561804860 /*2019-03-26 13:00 AEDT*/ }, // Worktips 3: Infinite staking, CN-Turtle
+  hard_fork{12, 0,   467000, 1563940800 /*2019-07-24 14:00 AEDT*/ }, // Worktips 4: Checkpointing, RandomXL, decommissioning, Storage Server launched
   //hard_fork{13, 0,   385824, 1571850000 /*2019-10-23 19:00 AEDT*/ }, // Worktips 5: Checkpointing enforced
   //hard_fork{14, 0,   442333, 1578528000 /*2020-01-09 00:00 UTC*/ }, // Worktips 6: Blink, Worktipsnet launched on mainnet
   //hard_fork{15, 0,   496969, 1585105200 /*2020-03-25 14:00 AEDT (03:00 UTC)*/ }, // Worktips 7: ONS (Session)
