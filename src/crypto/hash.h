@@ -81,6 +81,7 @@ namespace crypto {
     heavy_v1,
     heavy_v2,
     turtle_lite_v2,
+	cn_upx,
   };
 
   inline void cn_slow_hash(const void *data, std::size_t length, hash &hash, cn_slow_hash_type type) {
@@ -118,7 +119,6 @@ namespace crypto {
 #endif
 
       case cn_slow_hash_type::turtle_lite_v2:
-      default:
       {
          const uint32_t CN_TURTLE_SCRATCHPAD = 262144;
          const uint32_t CN_TURTLE_ITERATIONS = 131072;
@@ -131,6 +131,22 @@ namespace crypto {
              CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
       }
       break;
+	  
+      case cn_slow_hash_type::cn_upx:
+      default:
+      {
+         const uint32_t CN_UPX_SCRATCHPAD = 131072;
+         const uint32_t CN_UPX_ITERATIONS = 32768;
+         cn_upx_hash(data,
+             length,
+             hash.data,
+             2, // light
+             2, // variant
+             0, // pre-hashed
+             CN_UPX_SCRATCHPAD, CN_UPX_ITERATIONS);
+      }
+      break;	  
+	  
     }
   }
 

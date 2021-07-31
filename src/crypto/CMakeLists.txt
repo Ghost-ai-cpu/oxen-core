@@ -51,6 +51,7 @@ add_library(cncrypto
   cn_heavy_hash_hard_intel.cpp
   cn_heavy_hash_soft.cpp
   cn_turtle_hash.c
+  cn_upx_hash.c
   rx-slow-hash.c
   tree-hash.c)
 
