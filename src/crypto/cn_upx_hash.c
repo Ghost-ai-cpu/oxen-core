@@ -115,7 +115,7 @@ extern int aesb_pseudo_round(const uint8_t *in, uint8_t *out, const uint8_t *exp
 #define VARIANT2_PORTABLE_SHUFFLE_ADD(base_ptr, offset) \
   do if (variant == 2) \
   { \
-    uint64_t *chunk1 = U64((base_ptr) + ((offset) ^ (lightFlag == 16 ? 0x30 : 0x10))) \
+    uint64_t *chunk1 = U64((base_ptr) + ((offset) ^ (lightFlag == 16 ? 0x30 : 0x10))); \
     uint64_t* chunk2 = U64((base_ptr) + ((offset) ^ 0x20)); \
     uint64_t *chunk3 = U64((base_ptr) + ((offset) ^ (lightFlag == 16 ? 0x10 : 0x30))); \
     \
@@ -523,7 +523,7 @@ BOOL SetLockPagesPrivilege(HANDLE hProcess, BOOL bEnable)
  * the allocated buffer.
  */
 
-void slow_hash_allocate_state(uint32_t page_size)
+void upx_slow_hash_allocate_state(uint32_t page_size)
 {
     if(hp_state != NULL)
         return;
@@ -553,10 +553,10 @@ void slow_hash_allocate_state(uint32_t page_size)
 }
 
 /**
- *@brief frees the state allocated by slow_hash_allocate_state
+ *@brief frees the state allocated by upx_slow_hash_allocate_state
  */
 
-void slow_hash_free_state(uint32_t page_size)
+void upx_slow_hash_free_state(uint32_t page_size)
 {
     if(hp_state == NULL)
         return;
@@ -636,7 +636,7 @@ void cn_upx_hash(const void *data, size_t length, char *hash, int light, int var
       hash_extra_blake, hash_extra_groestl, hash_extra_jh, hash_extra_skein
   };
 
-  slow_hash_allocate_state(CN_UPX_PAGE_SIZE);
+  upx_slow_hash_allocate_state(CN_UPX_PAGE_SIZE);
 
   /* CryptoNight Step 1:  Use Keccak1600 to initialize the 'state' (and 'text') buffers from the data. */
   if (prehashed) {
@@ -746,17 +746,17 @@ void cn_upx_hash(const void *data, size_t length, char *hash, int light, int var
   memcpy(state.init, text, INIT_SIZE_BYTE);
   hash_permutation(&state.hs);
   extra_hashes[state.hs.b[0] & 3](&state, 200, hash);
-  slow_hash_free_state(CN_UPX_PAGE_SIZE);
+  upx_slow_hash_free_state(CN_UPX_PAGE_SIZE);
 }
 
 #elif defined(__arm__) || defined(__aarch64__) // ARCH arm
-void slow_hash_allocate_state(void)
+void upx_slow_hash_allocate_state(void)
 {
   // Do nothing, this is just to maintain compatibility with the upgraded slow-hash.c
   return;
 }
 
-void slow_hash_free_state(void)
+void upx_slow_hash_free_state(void)
 {
   // As above
   return;
@@ -1329,13 +1329,13 @@ void cn_upx_hash(const void *data, size_t length, char *hash, int light, int var
 #else // ARCH fallback
 // Portable implementation as a fallback
 
-void slow_hash_allocate_state(void)
+void upx_slow_hash_allocate_state(void)
 {
   // Do nothing, this is just to maintain compatibility with the upgraded slow-hash.c
   return;
 }
 
-void slow_hash_free_state(void)
+void upx_slow_hash_free_state(void)
 {
   // As above
   return;
